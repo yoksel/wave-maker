@@ -1,5 +1,5 @@
 {
-  "name": "project-scaffold",
+  "name": "wave-maker",
   "version": "1.0.0",
   "description": "",
   "main": "index.html",
@@ -7,7 +7,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yoksel/project-scaffold.git"
+    "url": "https://github.com/yoksel/wave-maker.git"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.5",

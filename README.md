@@ -1,1 +1,1 @@
-Curently project under construction.
+Currently project under construction.
