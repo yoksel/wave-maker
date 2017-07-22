@@ -86,6 +86,7 @@ var Arc = function () {
   this.xRot = 0;
   this.largeArc = 0;
   this.sweep = 0;
+  this.repeat = 5;
 
   this.addHelpers();
   this.addControls();
@@ -93,7 +94,7 @@ var Arc = function () {
   this.getPathCoords();
   this.setPathCoords();
 
-  this.addOutput()
+  this.addOutput();
 };
 
 //---------------------------------------------
@@ -132,6 +133,8 @@ Arc.prototype.setPathCoords = function () {
 
   this.setAllHelperArcParams();
   this.setAllControlsParams();
+
+  this.addWaves();
 };
 
 //---------------------------------------------
@@ -499,13 +502,49 @@ Arc.prototype.updateInputs = function () {
     }
     var value = +item.elem.value;
     var newValue = that.pathCoordsSet[name];
-    //setInputWidth.apply(input);
+
+    item.elem.value = newValue;
     if (value !== newValue) {
       setInputWidth.apply(item.elem);
     }
-    item.elem.value = newValue;
   });
-}
+};
+
+//---------------------------------------------
+
+Arc.prototype.addWaves = function () {
+  var wavesParamsSet = [this.pathCoords];
+
+  for (var i = 0; i < this.repeat; i++) {
+    wavesParamsSet.push(this.addWave(i));
+  }
+
+  var wavesParams = wavesParamsSet.join(' ');
+  this.arc.attr({ 'd': wavesParams });
+};
+
+//---------------------------------------------
+
+Arc.prototype.addWave = function (counter) {
+  var arcParamsSet = {};
+  var waveWidth = this.pathCoordsSet.endX - this.pathCoordsSet.startX;
+
+  for (var key in this.pathCoordsSet) {
+    arcParamsSet[key] = this.pathCoordsSet[key];
+  }
+
+  arcParamsSet['startX'] = this.pathCoordsSet.endX + (waveWidth * counter);
+  arcParamsSet['endX'] = this.pathCoordsSet.endX + (waveWidth * (counter + 1));
+  if (counter % 2 === 0) {
+    arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
+    arcParamsSet['startY'] = this.pathCoordsSet.endY;
+    arcParamsSet['endY'] = this.pathCoordsSet.startY;
+  }
+
+  var arcParamsVals = Object.values(arcParamsSet);
+  var arcParams = arcParamsVals.join(' ');
+  return arcParams;
+};
 
 //---------------------------------------------
 
