@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG Arc</title>
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <main class="main">
+      <div class="code-output">
+        <div class="code-output__inner">
+          &lt;path d="<span class="code-output__attrs" id="code-attrs"></span>"/&gt;
+        </div>
+      </div>
+
+      <svg class="svg" id="svg" width="100vw" height="calc(100vh - 100px)">
+
+        <path id="shape-arc"
+              stroke="black" stroke-width="5" fill="none"
+              d="M150,200 A5,5 0 0 0 250,200 z"
+              style="pointer-events: none;"
+        ></path>
+      </svg>
+    </main>
+  </div>
+
+
+  <script src="./assets/js/tinylib.js"></script>
+  <script src="./assets/js/script.js"></script>
+</body>
+</html>

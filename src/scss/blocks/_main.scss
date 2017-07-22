@@ -1,0 +1,123 @@
+.main {
+  // outline: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  // border: 1px solid silver;
+}
+
+.code-output {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #000;
+  // font-weight: bold;
+  font-size: 1.2rem;
+  font-family: Courier New, Courier, monospace;
+  color: #555;
+
+  &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  &__item {
+    position: relative;
+  }
+
+  &__input {
+    min-width: 0;
+    text-align: center;
+    background: transparent;
+    border: 2px solid transparent;
+    margin: 0 1px;
+    padding: 2px 0 1px;
+    border-radius: 3px;
+    line-height: 1;
+    color: #FFF;
+    transition: all .25s;
+
+    &:focus {
+      outline: 0;
+      color: yellowgreen;
+      border-color: currentColor;
+    }
+
+    &--string {
+      width: 1em;
+      color: lightseagreen;
+    }
+    &--number {
+      width: 2em;
+      color: gold;
+    }
+    &--largeArc,
+    &--sweep {
+      width: 1em;
+    }
+    &--error,
+    &--error:focus {
+      color: orangered;
+      border-color: currentColor;
+    }
+  }
+
+  &__desc {
+    position: absolute;
+    top: -1.5em;
+    left: 50%;
+    opacity: 0;
+    transform: translateX(-50%);
+    font: 16px/1 Arial, sans-serif;
+    color: yellowgreen;
+    transition: all .25s;
+  }
+
+  &__input:focus + &__desc {
+    opacity: 1;
+  }
+  &__input--error ~ &__desc {
+    color: orangered;
+  }
+
+  &__error {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 50%;
+    opacity: 0;
+    transform: translateX(-50%);
+    font: 16px/1 Arial, sans-serif;
+    color: orangered;
+  }
+
+  &__input--error:focus ~ &__error {
+    opacity: 1;
+  }
+}
+
+.svg {
+  flex-shrink: 0;
+  margin: auto;
+  overflow: visible !important;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-color: transparent #DDD #DDD transparent;
+  background:
+    linear-gradient(to bottom, #DDD 1px, transparent 0),
+    linear-gradient(to right, #DDD 1px, transparent 0);
+  background-size: 50px 50px;
+}
+
+.point-control {
+  stroke: #000;
+  stroke-width: 3;
+  fill: greenyellow;
+  cursor: pointer;
+  transition: fill .25s;
+
+  &:hover {
+    fill: orangered;
+  }
+}
