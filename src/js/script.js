@@ -574,12 +574,12 @@ Arc.prototype.addPathParams = function (params) {
     });
 
     input.elem.addEventListener('keydown', function (event) {
-      setIsCmd.apply(this, event);
+      setIsCmd.call(this, event);
       that.changeValueByKeyboard(event, this, error);
     });
 
     input.elem.addEventListener('keyup', function (event) {
-      unSetIsCmd.apply(this, event);
+      unSetIsCmd.call(this, event);
     });
   });
 
@@ -658,14 +658,16 @@ function checkValue(errorElem) {
 
 //---------------------------------------------
 
-function setIsCmd() {
-  if (event.keyCode == 91) {
+function setIsCmd(event) {
+  // Chrome || FF
+  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224) ) {
     this.isCmd = true;
   }
 }
 
-function unSetIsCmd() {
-  if (event.keyCode == 91) {
+function unSetIsCmd(event) {
+  // Chrome || FF
+  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
     this.isCmd = false;
   }
 }
