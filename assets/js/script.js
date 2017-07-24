@@ -614,11 +614,13 @@ Arc.prototype.addWave = function (counter) {
     arcParamsSet[key] = this.pathCoordsSet[key];
   }
 
-  arcParamsSet['startX'] = this.pathCoordsSet.endX + (waveWidth * counter);
+  arcParamsSet['startLetter'] = '';
+  arcParamsSet['startX'] = '';
+  arcParamsSet['startY'] = '';
+
   arcParamsSet['endX'] = this.pathCoordsSet.endX + (waveWidth * (counter + 1));
   if (counter % 2 === 0) {
     arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
-    arcParamsSet['startY'] = this.pathCoordsSet.endY;
     arcParamsSet['endY'] = this.pathCoordsSet.startY;
   }
 
