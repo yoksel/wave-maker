@@ -3,13 +3,20 @@
 var doc = document;
 var $ = tinyLib;
 
-var codeOutput = $.get('#code-attrs');
 var svg = $.get('#svg');
 var shapeArc = $.get('#shape-arc');
-var inputClass = 'code-output__input';
-var inputClassError = inputClass + '--error';
-var outputList = [
-  {
+
+var pathCoordsAttrs = $.get('.path-coords__attrs');
+var attrsClass = 'attrs';
+var itemClass = attrsClass + '__item';
+var itemLineClass = itemClass + '--line';
+var inputClass = attrsClass + '__input';
+var inputErrorClass = inputClass + '--error';
+var labelClass = attrsClass + '__label';
+var labelLineClass = labelClass + '--line';
+var labelHiddenClass = labelClass + '--hidden';
+var errorClass = attrsClass + '__error';
+var pathCoordsList = [{
     prop: 'startLetter'
   },
   {
@@ -59,6 +66,19 @@ var outputList = [
   },
 ];
 
+var pathParams = $.get('.path-params');
+var pathParamsList = [{
+    prop: 'repeat',
+    desc: 'repeat',
+    min: 0
+  },
+  {
+    prop: 'strokeWidth',
+    desc: 'stroke-width',
+    min: 1
+  }
+];
+
 // d="M150,200 A5,5 0 0 0 250,200 z"
 // M150,200 — start point
 
@@ -77,6 +97,8 @@ var outputList = [
 
 var Arc = function () {
   this.arc = $.get('#shape-arc');
+  this.startLetter = 'M';
+  this.arcLetter = 'A';
   this.startX = 150;
   this.startY = 200;
   this.endX = 400;
@@ -86,7 +108,9 @@ var Arc = function () {
   this.xRot = 0;
   this.largeArc = 0;
   this.sweep = 0;
-  this.repeat = 5;
+  this.repeat = 0;
+  this.strokeWidth = 5;
+  this.pathCoordsInputs = [];
 
   this.addHelpers();
   this.addControls();
@@ -94,17 +118,28 @@ var Arc = function () {
   this.getPathCoords();
   this.setPathCoords();
 
-  this.addOutput();
+  this.addPathParams({
+    list: pathCoordsList,
+    target: pathCoordsAttrs,
+    itemIsLine: false,
+    labelIsHidden: true,
+  });
+  this.addPathParams({
+    list: pathParamsList,
+    target: pathParams,
+    itemIsLine: true,
+    labelIsHidden: false,
+  });
 };
 
 //---------------------------------------------
 
 Arc.prototype.getPathCoords = function () {
   this.pathCoordsSet = {
-    startLetter: 'M',
+    startLetter: this.startLetter,
     startX: this.startX,
     startY: this.startY,
-    arcLetter: 'A',
+    arcLetter: this.arcLetter,
     rX: this.rX,
     rY: this.rY,
     xRot: this.xRot,
@@ -128,7 +163,10 @@ Arc.prototype.getPathCoords = function () {
 //---------------------------------------------
 
 Arc.prototype.setPathCoords = function () {
-  this.arc.attr('d', this.pathCoords);
+  this.arc.attr({
+    'd': this.pathCoords,
+    'stroke-width': this.strokeWidth
+  });
   this.arc.rect = this.arc.elem.getBBox();
 
   this.setAllHelperArcParams();
@@ -320,7 +358,7 @@ Arc.prototype.addHelperArc = function (params) {
     .attr({
       'id': params.id,
       'fill': 'none',
-      'stroke': params.stroke || '#AAA'
+      'stroke': params.stroke || '#999'
     });
 
   svg.prepend(arcHelper.elemSet);
@@ -379,57 +417,150 @@ Arc.prototype.addHelperLine = function () {
 
 //---------------------------------------------
 
-Arc.prototype.addOutput = function () {
-  this.outputElems = [];
-  this.outputInputs = [];
+Arc.prototype.changeValueByKeyboard = function (event, input, error) {
+  if (!(event.keyCode == 38 || event.keyCode == 40)) {
+    return;
+  }
+
+  var step = 1;
+
+  if (event.shiftKey && (event.ctrlKey || input.isCmd)) {
+    step = 1000;
+  } else if (event.ctrlKey || input.isCmd) {
+    step = 100;
+  } else if (event.shiftKey) {
+    step = 10;
+  }
+
+  if (event.keyCode === 38) {
+    input.value = +input.value + step;
+  } else {
+    input.value = +input.value - step;
+  }
+
+  setInputWidth.apply(input);
+  if (!checkValue.apply(input, [error])) {
+    return false;
+  }
+
+  this[input.name] = input.value;
+  this.getPathCoords();
+  this.setPathCoords();
+};
+
+//---------------------------------------------
+
+Arc.prototype.updateInputs = function () {
   var that = this;
 
-  outputList.forEach(function (item) {
-    var prop = item.prop;
-    var value = that.pathCoordsSet[prop];
-    var input = $.create('input')
-      .attr({
-        type: 'input',
-        inputmode: 'numeric',
-        name: prop,
-        id: prop,
-        value: value
-      })
-      .addClass([
-        inputClass,
-        inputClass + '--' + prop,
-        inputClass + '--' + typeof (value)
-      ]);
+  this.pathCoordsInputs.forEach(function (item) {
+    var name = item.elem.name;
+    if (!that[name]) {
+      return;
+    }
+    var value = +item.elem.value;
+    var newValue = that.pathCoordsSet[name] || that[name];
 
-    if (item.min !== undefined && item.min !== null) {
-      input.attr({min: item.min});
+    item.elem.value = newValue;
+    if (value !== newValue) {
+      setInputWidth.apply(item.elem);
     }
-    if (item.max) {
-      input.attr({max: item.max});
-    }
-    if (typeof (value) === 'string') {
-      input.attr({
-        'disabled': ''
-      });
-    }
+  });
+};
 
-    var desc = $.create('label')
-      .attr({'for': prop})
-      .addClass('code-output__desc')
-      .html(item.desc);
+//---------------------------------------------
+
+Arc.prototype.createInput = function (item) {
+  var name = item.prop;
+  var value = this[name];
+
+  var input = $.create('input')
+    .attr({
+      type: 'text',
+      name: name,
+      id: name,
+      value: value
+    })
+    .addClass([
+      inputClass,
+      inputClass + '--' + name,
+      inputClass + '--' + typeof (value)
+    ]);
+
+  if (item.min !== undefined && item.min !== null) {
+    input.attr({
+      min: item.min
+    });
+  }
+  if (item.max) {
+    input.attr({
+      max: item.max
+    });
+  }
+  if (typeof (value) === 'string') {
+    input.attr({
+      'disabled': ''
+    });
+  }
+
+  return input;
+};
+
+//---------------------------------------------
+
+Arc.prototype.createLabel = function (item, params) {
+  var name = item.prop;
+  var value = this[name];
+
+  var label = $.create('label')
+    .attr({
+      for: name
+    })
+    .addClass(labelClass);
+
+  if (params.labelIsHidden) {
+    label.addClass(labelHiddenClass);
+  }
+  if (params.itemIsLine) {
+    label.addClass(labelLineClass);
+  }
+  label.html(item.desc);
+
+  return label;
+};
+
+//---------------------------------------------
+
+Arc.prototype.addPathParams = function (params) {
+  var that = this;
+  var list = params.list;
+  var target = params.target;
+  var items = [];
+
+  list.forEach(function (item) {
+    var name = item.prop;
+    var value = that[name];
+
+    var input = that.createInput(item);
+
+    var label = that.createLabel(item, params);
 
     var error = $.create('span')
-      .addClass('code-output__error');
+      .addClass(errorClass);
 
     var item = $.create('span')
       .addClass([
-        'code-output__item',
-        'code-output__item--' + prop
+        itemClass,
+        itemClass + '--' + name
       ])
-      .append([input, desc, error]);
+      .append([input, label, error]);
 
-    that.outputElems.push(item);
-    that.outputInputs.push(input);
+    if (params.itemIsLine) {
+      item.addClass(itemLineClass);
+    }
+
+    that.pathCoordsInputs.push(input);
+    items.push(item);
 
     // Events
     input.elem.addEventListener('input', function () {
@@ -450,77 +581,27 @@ Arc.prototype.addOutput = function () {
     input.elem.addEventListener('keyup', function (event) {
       unSetIsCmd.apply(this, event);
     });
-
-  })
-
-  codeOutput.append(this.outputElems);
-};
-
-//---------------------------------------------
-
-Arc.prototype.changeValueByKeyboard = function (event, input, error) {
-  if (!(event.keyCode == 38 || event.keyCode == 40)) {
-    return;
-  }
-
-  var step = 1;
-
-  if (event.shiftKey && (event.ctrlKey || input.isCmd)) {
-    step = 1000;
-  } else if (event.ctrlKey || input.isCmd) {
-    step = 100;
-  }
-  else if (event.shiftKey) {
-    step = 10;
-  }
-
-  if (event.keyCode === 38) {
-    input.value = +input.value + step;
-  } else {
-    input.value = +input.value - step;
-  }
-
-  setInputWidth.apply(input);
-  if (!checkValue.apply(input, [error])) {
-      return false;
-  }
-
-  this[input.name] = input.value;
-  this.getPathCoords();
-  this.setPathCoords();
-};
-
-//---------------------------------------------
-
-Arc.prototype.updateInputs = function () {
-  var that = this;
-
-  this.outputInputs.forEach(function (item) {
-    var name = item.elem.name;
-    if (!that[name]) {
-      return;
-    }
-    var value = +item.elem.value;
-    var newValue = that.pathCoordsSet[name];
-
-    item.elem.value = newValue;
-    if (value !== newValue) {
-      setInputWidth.apply(item.elem);
-    }
   });
+
+  target.append(items);
 };
 
 //---------------------------------------------
 
 Arc.prototype.addWaves = function () {
   var wavesParamsSet = [this.pathCoords];
+  if (this.repeat === 0) {
+    return;
+  }
 
   for (var i = 0; i < this.repeat; i++) {
     wavesParamsSet.push(this.addWave(i));
   }
 
   var wavesParams = wavesParamsSet.join(' ');
-  this.arc.attr({ 'd': wavesParams });
+  this.arc.attr({
+    'd': wavesParams
+  });
 };
 
 //---------------------------------------------
@@ -556,20 +637,18 @@ function setInputWidth() {
 
 function checkValue(errorElem) {
   errorElem.html('');
-  this.classList.remove(inputClassError);
+  this.classList.remove(inputErrorClass);
 
   if (isNaN(this.value)) {
     errorElem.html('not a number');
-    this.classList.add(inputClassError);
+    this.classList.add(inputErrorClass);
     return false;
-  }
-  else if (this.min && this.value < this.min) {
-    this.classList.add(inputClassError);
+  } else if (this.min && this.value < this.min) {
+    this.classList.add(inputErrorClass);
     errorElem.html('minimum: ' + this.min);
     return false;
-  }
-  else if (this.max && this.value > this.max) {
-    this.classList.add(inputClassError);
+  } else if (this.max && this.value > this.max) {
+    this.classList.add(inputErrorClass);
     errorElem.html('maximum: ' + this.max);
     return false;
   }

@@ -7,20 +7,32 @@
 <body>
   <div class="container">
     <main class="main">
-      <div class="code-output">
-        <div class="code-output__inner">
-          &lt;path d="<span class="code-output__attrs" id="code-attrs"></span>"/&gt;
+      <div class="path-coords panel">
+        <div class="panel__inner">
+          &lt;path d="<span
+            class="
+              attrs
+              path-coords__attrs
+              "></span>"/&gt;
         </div>
       </div>
 
-      <svg class="svg" id="svg" width="100vw" height="calc(100vh - 100px)">
+      <svg class="svg" id="svg">
 
         <path id="shape-arc"
-              stroke="black" stroke-width="5" fill="none"
+              stroke="black" fill="none"
+              stroke-linecap="round"
               d="M150,200 A5,5 0 0 0 250,200 z"
-              style="pointer-events: none;"
         ></path>
       </svg>
+      <div class="panel">
+        <div
+          class="
+            attrs
+            path-params
+            panel__inner
+            "></div>
+      </div>
     </main>
   </div>
 
