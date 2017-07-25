@@ -651,7 +651,10 @@ Arc.prototype.updateCode = function () {
   viewBox = viewBox.join(' ');
   var output = '<svg viewBox="' + viewBox + '">' + this.arc.elem.outerHTML + '</svg>';
   codeOutput.val(output);
+  codeOutput.elem.style.maxHeight = '0';
+  console.log(codeOutput.elem.scrollHeight);
   codeWrapper.elem.style.maxHeight = (codeOutput.elem.scrollHeight + 2)+ 'px';
+  codeOutput.elem.style.maxHeight = null;
 
 };
 

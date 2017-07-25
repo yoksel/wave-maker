@@ -1,0 +1,49 @@
+.code {
+  position: relative;
+  margin-left: 20px;
+
+  &__button {
+    height: 30px;
+    padding: 0 10px;
+    background: transparent;
+    border: 2px solid #222;
+    border-radius: 3px;
+    line-height: 30px;
+    font: 16px/1 Arial, sans-serif;
+    color: yellowgreen;
+
+    &:focus {
+      outline: 0;
+      border-color: currentColor;
+    }
+  }
+
+  &__textarea-wrapper {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    transform: translateX(-50%);
+    transition: all .25s;
+  }
+
+  &--opened &__textarea-wrapper {
+    height: 300px;
+    overflow: visible;
+  }
+
+  &__textarea {
+    min-width: 400px;
+    padding: 10px;
+    box-sizing: border-box;
+    background: rgba(255,255,255,.9);
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0,0,0,.5);
+    font: inherit;
+    font-size: 14px;
+  }
+}

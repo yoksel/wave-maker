@@ -557,17 +557,14 @@ H5 {
     height: 30px;
     padding: 0 10px;
     background: transparent;
-    border: 2px solid transparent;
+    border: 2px solid #222;
     border-radius: 3px;
     line-height: 30px;
     font: 16px/1 Arial, sans-serif;
-    color: inherit; }
+    color: yellowgreen; }
     .code__button:focus {
       outline: 0;
-      color: yellowgreen;
       border-color: currentColor; }
-  .code--opened .code__button {
-    color: yellowgreen; }
   .code__textarea-wrapper {
     position: absolute;
     bottom: 45px;

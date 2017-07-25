@@ -1,0 +1,92 @@
+.attrs {
+  display: flex;
+
+  &__item {
+    position: relative;
+
+    &--line {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: .5em;
+    }
+  }
+
+  &__input {
+    min-width: 0;
+    text-align: center;
+    background: transparent;
+    border: 2px solid transparent;
+    margin: 0 1px;
+    padding: 2px 0 1px;
+    border-radius: 3px;
+    line-height: 1;
+    color: #FFF;
+    transition: all .25s;
+
+    &:focus {
+      outline: 0;
+      color: yellowgreen;
+      border-color: currentColor;
+    }
+
+    &--string {
+      width: 1em;
+      color: lightseagreen;
+    }
+    &--number {
+      width: 2em;
+      color: gold;
+    }
+    &--largeArc,
+    &--sweep,
+    &--xRot {
+      width: 1em;
+    }
+    &--error,
+    &--error:focus {
+      color: orangered;
+      border-color: currentColor;
+    }
+  }
+
+  &__label {
+    font: 16px/1 Arial, sans-serif;
+    color: yellowgreen;
+    transition: all .25s;
+    order: -1;
+
+    &--hidden {
+      position: absolute;
+      top: -1.5em;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+
+    &--line {
+      margin-right: .5em;
+    }
+  }
+
+  &__input:focus ~ &__label {
+    opacity: 1;
+  }
+  &__input--error ~ &__label {
+    color: orangered;
+  }
+
+  &__error {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 50%;
+    opacity: 0;
+    transform: translateX(-50%);
+    font: 16px/1 Arial, sans-serif;
+    color: orangered;
+  }
+
+  &__input--error:focus ~ &__error {
+    opacity: 1;
+  }
+}
