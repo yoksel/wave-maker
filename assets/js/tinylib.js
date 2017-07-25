@@ -92,6 +92,16 @@
 
         //---------------------------------
 
+        ElemSet.prototype.toggleClass = function ( className ) {
+
+          var elem = this.elem;
+          elem.classList.toggle( className );
+
+          return this;
+        };
+
+        //---------------------------------
+
         ElemSet.prototype.append = function( elem ) {
           var itemsToAdd = inputElemToItemsList( elem );
           var that = this;

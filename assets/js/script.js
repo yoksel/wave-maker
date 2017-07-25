@@ -3,9 +3,11 @@
 var doc = document;
 var $ = tinyLib;
 
-var svg = $.get('#svg');
-var shapeArc = $.get('#shape-arc');
-
+var svg = $.get('.svg');
+var code = $.get('.code');
+var codeOutput = $.get('.code__textarea');
+var codeWrapper = $.get('.code__textarea-wrapper');
+var codeButton = $.get('.code__button');
 var pathCoordsAttrs = $.get('.path-coords__attrs');
 var attrsClass = 'attrs';
 var itemClass = attrsClass + '__item';
@@ -96,7 +98,7 @@ var pathParamsList = [{
 //---------------------------------------------
 
 var Arc = function () {
-  this.arc = $.get('#shape-arc');
+  this.arc = $.get('.shape-arc');
   this.startLetter = 'M';
   this.arcLetter = 'A';
   this.startX = 150;
@@ -130,6 +132,7 @@ var Arc = function () {
     itemIsLine: true,
     labelIsHidden: false,
   });
+
 };
 
 //---------------------------------------------
@@ -173,6 +176,7 @@ Arc.prototype.setPathCoords = function () {
   this.setAllControlsParams();
 
   this.addWaves();
+  this.updateCode();
 };
 
 //---------------------------------------------
@@ -614,19 +618,41 @@ Arc.prototype.addWave = function (counter) {
     arcParamsSet[key] = this.pathCoordsSet[key];
   }
 
-  arcParamsSet['startLetter'] = '';
-  arcParamsSet['startX'] = '';
-  arcParamsSet['startY'] = '';
+  delete arcParamsSet['startLetter'];
+  delete arcParamsSet['startX'];
+  delete arcParamsSet['startY'];
 
   arcParamsSet['endX'] = this.pathCoordsSet.endX + (waveWidth * (counter + 1));
   if (counter % 2 === 0) {
     arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
+    // arcParamsSet['largeArc'] = +!this.pathCoordsSet.largeArc;
     arcParamsSet['endY'] = this.pathCoordsSet.startY;
   }
 
   var arcParamsVals = Object.values(arcParamsSet);
   var arcParams = arcParamsVals.join(' ');
   return arcParams;
+};
+
+//---------------------------------------------
+
+Arc.prototype.updateCode = function () {
+  var rect = this.arc.elem.getBBox();
+  var strokeWidthHalf = this.strokeWidth / 2;
+  var viewBox = [
+    rect.x - strokeWidthHalf,
+    rect.y - strokeWidthHalf,
+    rect.width + +this.strokeWidth,
+    rect.height + +this.strokeWidth
+  ];
+  viewBox = viewBox.map(function (item) {
+    return Math.round(item);
+  });
+  viewBox = viewBox.join(' ');
+  var output = '<svg viewBox="' + viewBox + '">' + this.arc.elem.outerHTML + '</svg>';
+  codeOutput.val(output);
+  codeWrapper.elem.style.maxHeight = (codeOutput.elem.scrollHeight + 2)+ 'px';
+
 };
 
 //---------------------------------------------
@@ -662,7 +688,7 @@ function checkValue(errorElem) {
 
 function setIsCmd(event) {
   // Chrome || FF
-  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224) ) {
+  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
     this.isCmd = true;
   }
 }
@@ -685,7 +711,23 @@ function getMouseY(event) {
 }
 
 //---------------------------------------------
+console.log(code);
 
+code.elem.addEventListener('click', function (event) {
+  event.stopPropagation();
+});
+
+codeButton.elem.addEventListener('click', function (event) {
+  code.toggleClass('code--opened');
+});
+
+doc.addEventListener('click', function () {
+  var codePanel = $.get('.code--opened');
+
+  if (codePanel.elem) {
+    codePanel.removeClass('code--opened');
+  }
+});
 
 
 //---------------------------------------------

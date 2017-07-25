@@ -17,21 +17,25 @@
         </div>
       </div>
 
-      <svg class="svg" id="svg">
-
-        <path id="shape-arc"
+      <svg class="svg">
+        <path class="shape-arc"
               stroke="black" fill="none"
               stroke-linecap="round"
+              stroke-width="5"
               d="M150,200 A5,5 0 0 0 250,200 z"
         ></path>
       </svg>
       <div class="panel">
-        <div
-          class="
-            attrs
-            path-params
-            panel__inner
-            "></div>
+        <div class="panel__inner">
+          <div class="path-params attrs"></div>
+
+          <div class="code">
+              <button class="code__button" type="button">Get code</button>
+              <div class="code__textarea-wrapper">
+                <textarea class="code__textarea"></textarea>
+              </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>

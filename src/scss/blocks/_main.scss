@@ -1,8 +1,6 @@
 .main {
-  outline: 2px solid red;
   display: flex;
   flex-direction: column;
-  // border: 1px solid silver;
 }
 
 .panel {
@@ -22,7 +20,7 @@
   &__inner {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     white-space: nowrap;
   }
 }
@@ -54,6 +52,3 @@
   }
 }
 
-.waves-params {
-
-}
