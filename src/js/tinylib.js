@@ -224,10 +224,9 @@
               var data = elem.dataset[ content ];
               return data;
             }
-
           }
 
-          return null;
+          return elem.dataset;
         };
 
         //---------------------------------

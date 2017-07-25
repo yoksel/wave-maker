@@ -8,6 +8,7 @@ var code = $.get('.code');
 var codeOutput = $.get('.code__textarea');
 var codeWrapper = $.get('.code__textarea-wrapper');
 var codeButton = $.get('.code__button');
+var waveTypes = $.get('.wave-types');
 var pathCoordsAttrs = $.get('.path-coords__attrs');
 var attrsClass = 'attrs';
 var itemClass = attrsClass + '__item';
@@ -81,19 +82,50 @@ var pathParamsList = [{
   }
 ];
 
-// d="M150,200 A5,5 0 0 0 250,200 z"
-// M150,200 — start point
-
-// A 5, 5 0 0 0
-// a rx ry x-axis-rotation large-arc-flag sweep-flag
-// A rx,ry – радиусы дуги элипса
-// x-axis-rotation – угол поворота всей дуги элипса относительно оси абцисс
-// large-arc-flag – определяет, должна ли дуга быть больше или меньше 180 градусов / 0/1
-// sweep-flag – отвечает за направление отрисовки дуги из начальной точки в конечную точку. sweep-flag=1 — по часовой стрелке; sweep-flag=0 – против.
-
-// 250,200 — end point
-
-// Live arc editor https://codepen.io/lingtalfi/pen/yaLWJG
+var wavesInputsList = {
+  'radiowave': {
+    'rX': 80,
+    'rY': 100,
+    'endX': 300,
+    'xRot': 0,
+    'largeArc': 0,
+    'sweep': 0,
+    'rotateSweep': 1,
+    'rotateLargeArc': 0
+    },
+  'seawave': {
+    'rX': 80,
+    'rY': 100,
+    'endX': 300,
+    'xRot': 0,
+    'largeArc': 0,
+    'sweep': 0,
+    'rotateSweep': 0,
+    'rotateLargeArc': 0
+    },
+  'lightbulbs': {
+    'rX': 80,
+    'rY': 80,
+    'endX': 250,
+    'xRot': 0,
+    'largeArc': 1,
+    'sweep': 1,
+    'repeat': 4,
+    'rotateSweep': 1,
+    'rotateLargeArc': 0
+    },
+  'cursive': {
+    'rX': 20,
+    'rY': 90,
+    'endX': 300,
+    'xRot': 60,
+    'largeArc': 1,
+    'sweep': 0,
+    'repeat': 4,
+    'rotateSweep': 1,
+    'rotateLargeArc': 0
+    }
+};
 
 //---------------------------------------------
 
@@ -105,14 +137,17 @@ var Arc = function () {
   this.startY = 200;
   this.endX = 400;
   this.endY = 200;
-  this.rX = 150;
-  this.rY = 100;
+  this.rX = 130;
+  this.rY = 120;
   this.xRot = 0;
   this.largeArc = 0;
   this.sweep = 0;
   this.repeat = 0;
   this.strokeWidth = 5;
   this.pathCoordsInputs = [];
+
+  this.rotateSweep = true;
+  this.rotateLargeArc = false;
 
   this.addHelpers();
   this.addControls();
@@ -133,6 +168,7 @@ var Arc = function () {
     labelIsHidden: false,
   });
 
+  this.addWaveInputs();
 };
 
 //---------------------------------------------
@@ -624,8 +660,13 @@ Arc.prototype.addWave = function (counter) {
 
   arcParamsSet['endX'] = this.pathCoordsSet.endX + (waveWidth * (counter + 1));
   if (counter % 2 === 0) {
-    arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
-    // arcParamsSet['largeArc'] = +!this.pathCoordsSet.largeArc;
+    if (this.rotateSweep) {
+      arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
+    }
+    if (this.rotateLargeArc) {
+      arcParamsSet['largeArc'] = +!this.pathCoordsSet.largeArc;
+    }
+
     arcParamsSet['endY'] = this.pathCoordsSet.startY;
   }
 
@@ -652,10 +693,66 @@ Arc.prototype.updateCode = function () {
   var output = '<svg viewBox="' + viewBox + '">' + this.arc.elem.outerHTML + '</svg>';
   codeOutput.val(output);
   codeOutput.elem.style.maxHeight = '0';
-  console.log(codeOutput.elem.scrollHeight);
-  codeWrapper.elem.style.maxHeight = (codeOutput.elem.scrollHeight + 2)+ 'px';
+  codeWrapper.elem.style.maxHeight = (codeOutput.elem.scrollHeight + 2) + 'px';
   codeOutput.elem.style.maxHeight = null;
 
+};
+
+//---------------------------------------------
+
+Arc.prototype.addWaveInputs = function () {
+  var that = this;
+  var prefix = 'wave-types';
+  var items = [];
+
+  for (var key in wavesInputsList) {
+    var input = $.create('input')
+      .attr({
+        type: 'radio',
+        name: prefix,
+        id: key
+      })
+      .addClass(prefix + '__input');
+
+    var label = $.create('label')
+      .attr({
+        for: key
+      })
+      .addClass(prefix + '__label')
+      .html(key);
+
+    var item = $.create('div')
+      .addClass(prefix + '__item')
+      .append([input, label]);
+
+    items.push(item);
+
+    input.elem.addEventListener('click', function () {
+      // console.log(this.id);
+      var params = wavesInputsList[this.id];
+      console.log(params);
+
+      for (var key in params) {
+        that[key] = +params[key];
+        // console.log(params[key]);
+        // console.log(that[key]);
+      }
+
+      if (+that.repeat === 0) {
+        that.repeat = 3;
+      }
+      else {
+        console.log(that.repeat);
+      }
+
+      that.getPathCoords();
+      that.setPathCoords();
+      // that.addWaves();
+      that.updateInputs();
+    });
+  }
+
+  waveTypes.append(items);
 };
 
 //---------------------------------------------
@@ -714,8 +811,8 @@ function getMouseY(event) {
 }
 
 //---------------------------------------------
-console.log(code);
 
+// Code events
 code.elem.addEventListener('click', function (event) {
   event.stopPropagation();
 });
@@ -731,7 +828,6 @@ doc.addEventListener('click', function () {
     codePanel.removeClass('code--opened');
   }
 });
-
 
 //---------------------------------------------
 

@@ -588,6 +588,19 @@ H5 {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     font: inherit;
     font-size: 14px; }
+
+.wave-types {
+  margin-left: 40px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font: 16px/1.4 Arial, sans-serif; }
+  .wave-types__item {
+    flex-basis: 40%; }
+  .wave-types__input {
+    display: none; }
+  .wave-types__input:checked + .wave-types__label {
+    color: yellowgreen; }
   @media (min-width: 768px) {
   .header,
     .container,
