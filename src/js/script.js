@@ -4,11 +4,20 @@ var doc = document;
 var $ = tinyLib;
 
 var svg = $.get('.svg');
+
+var popup = $.get('.popup');
+var popupOpenedClass = 'popup--opened';
+var popupToggle = $.get('.popup__toggle');
+
 var code = $.get('.code');
 var codeOutput = $.get('.code__textarea');
 var codeWrapper = $.get('.code__textarea-wrapper');
-var codeButton = $.get('.code__button');
+var codeButton = $.get('.code__toggle');
+
 var waveTypes = $.get('.wave-types');
+var waveTypesToggle = $.get('.wave-types__toggle');
+var waveTypesItems = $.get('.wave-types__items');
+
 var pathCoordsAttrs = $.get('.path-coords__attrs');
 var attrsClass = 'attrs';
 var itemClass = attrsClass + '__item';
@@ -86,20 +95,24 @@ var wavesInputsList = {
   'radiowave': {
     'rX': 80,
     'rY': 100,
+    'endY': 200,
     'endX': 300,
     'xRot': 0,
     'largeArc': 0,
     'sweep': 0,
+    'repeat': 4,
     'rotateSweep': 1,
     'rotateLargeArc': 0
     },
   'seawave': {
     'rX': 80,
     'rY': 100,
+    'endY': 200,
     'endX': 300,
     'xRot': 0,
     'largeArc': 0,
     'sweep': 0,
+    'repeat': 4,
     'rotateSweep': 0,
     'rotateLargeArc': 0
     },
@@ -124,6 +137,20 @@ var wavesInputsList = {
     'repeat': 4,
     'rotateSweep': 1,
     'rotateLargeArc': 0
+  },
+  'circle': {
+    'startX': 200,
+    'startY': 50,
+    'rX': 100,
+    'rY': 100,
+    'endX': 200,
+    'endY': 300,
+    'xRot': 0,
+    'largeArc': 0,
+    'sweep': 0,
+    'repeat': 1,
+    'rotateSweep': 0,
+    'rotateLargeArc': 1
     }
 };
 
@@ -692,10 +719,6 @@ Arc.prototype.updateCode = function () {
   viewBox = viewBox.join(' ');
   var output = '<svg viewBox="' + viewBox + '">' + this.arc.elem.outerHTML + '</svg>';
   codeOutput.val(output);
-  codeOutput.elem.style.maxHeight = '0';
-  codeWrapper.elem.style.maxHeight = (codeOutput.elem.scrollHeight + 2) + 'px';
-  codeOutput.elem.style.maxHeight = null;
-
 };
 
 //---------------------------------------------
@@ -706,29 +729,22 @@ Arc.prototype.addWaveInputs = function () {
   var items = [];
 
   for (var key in wavesInputsList) {
-    var input = $.create('input')
+    var button = $.create('button')
       .attr({
-        type: 'radio',
+        type: 'button',
         name: prefix,
         id: key
       })
-      .addClass(prefix + '__input');
-
-    var label = $.create('label')
-      .attr({
-        for: key
-      })
-      .addClass(prefix + '__label')
-      .html(key);
+      .html(key)
+      .addClass(prefix + '__button');
 
     var item = $.create('div')
       .addClass(prefix + '__item')
-      .append([input, label]);
+      .append([button]);
 
     items.push(item);
 
-    input.elem.addEventListener('click', function () {
-      // console.log(this.id);
+    button.elem.addEventListener('click', function () {
       var params = wavesInputsList[this.id];
       console.log(params);
 
@@ -752,7 +768,7 @@ Arc.prototype.addWaveInputs = function () {
     });
   }
 
-  waveTypes.append(items);
+  waveTypesItems.append(items);
 };
 
 //---------------------------------------------
@@ -813,21 +829,47 @@ function getMouseY(event) {
 //---------------------------------------------
 
 // Code events
-code.elem.addEventListener('click', function (event) {
-  event.stopPropagation();
+popup.forEach(function (item) {
+  item.elem.addEventListener('click', function (event) {
+    event.stopPropagation();
+  });
 });
 
-codeButton.elem.addEventListener('click', function (event) {
-  code.toggleClass('code--opened');
-});
+popupToggle.forEach(function (item) {
+
+  item.elem.addEventListener('click', function (event) {
+    var parent = this.parentNode;
+
+    if (parent.classList.contains(popupOpenedClass)) {
+      parent.classList.remove(popupOpenedClass);
+    }
+    else {
+      closeOpened();
+      var container = parent.querySelector('.popup__container');
+      var content = parent.querySelector('.popup__content');
+
+      // trick to get real scrollHeight
+      content.style.maxHeight = '0';
+      container.style.maxHeight = (content.scrollHeight + 2) + 'px';
+      content.style.maxHeight = null;
+
+      parent.classList.toggle(popupOpenedClass);
+    }
+  });
+ });
+
 
 doc.addEventListener('click', function () {
-  var codePanel = $.get('.code--opened');
-
-  if (codePanel.elem) {
-    codePanel.removeClass('code--opened');
-  }
+  closeOpened();
 });
+
+function closeOpened() {
+  var popupPanel = $.get('.' + popupOpenedClass);
+
+  if (popupPanel.elem) {
+    popupPanel.removeClass(popupOpenedClass);
+  }
+}
 
 //---------------------------------------------
 
