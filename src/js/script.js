@@ -4,6 +4,7 @@ var doc = document;
 var $ = tinyLib;
 
 var svg = $.get('.svg');
+var targetPath = $.get('.shape-arc');
 
 var popup = $.get('.popup');
 var popupOpenedClass = 'popup--opened';
@@ -93,6 +94,8 @@ var pathParamsList = [{
 
 var wavesInputsList = {
   'radiowave': {
+    'startX': 150,
+    'startY': 200,
     'rX': 80,
     'rY': 100,
     'endY': 200,
@@ -103,34 +106,43 @@ var wavesInputsList = {
     'repeat': 4,
     'rotateSweep': 1,
     'rotateLargeArc': 0
-    },
+  },
   'seawave': {
+    'startX': 150,
+    'startY': 200,
     'rX': 80,
     'rY': 100,
-    'endY': 200,
     'endX': 300,
+    'endY': 200,
     'xRot': 0,
     'largeArc': 0,
     'sweep': 0,
     'repeat': 4,
     'rotateSweep': 0,
     'rotateLargeArc': 0
-    },
+  },
   'lightbulbs': {
+    'startX': 150,
+    'startY': 200,
     'rX': 80,
     'rY': 80,
     'endX': 250,
+    'endY': 200,
     'xRot': 0,
     'largeArc': 1,
     'sweep': 1,
-    'repeat': 4,
+    'repeatBtn': 8,
+    'repeat': 6,
     'rotateSweep': 1,
     'rotateLargeArc': 0
-    },
+  },
   'cursive': {
+    'startX': 150,
+    'startY': 200,
     'rX': 20,
     'rY': 90,
     'endX': 300,
+    'endY': 200,
     'xRot': 60,
     'largeArc': 1,
     'sweep': 0,
@@ -139,6 +151,7 @@ var wavesInputsList = {
     'rotateLargeArc': 0
   },
   'circle': {
+    'hidden': true,
     'startX': 200,
     'startY': 50,
     'rX': 100,
@@ -156,8 +169,9 @@ var wavesInputsList = {
 
 //---------------------------------------------
 
-var Arc = function () {
-  this.arc = $.get('.shape-arc');
+var Arc = function (targetPath, hasControls) {
+  this.arc = targetPath;
+  this.hasControls = hasControls || false;
   this.startLetter = 'M';
   this.arcLetter = 'A';
   this.startX = 150;
@@ -176,26 +190,30 @@ var Arc = function () {
   this.rotateSweep = true;
   this.rotateLargeArc = false;
 
-  this.addHelpers();
-  this.addControls();
+  if (this.hasControls) {
+    this.addHelpers();
+    this.addControls();
+  }
 
   this.getPathCoords();
   this.setPathCoords();
 
-  this.addPathParams({
-    list: pathCoordsList,
-    target: pathCoordsAttrs,
-    itemIsLine: false,
-    labelIsHidden: true,
-  });
-  this.addPathParams({
-    list: pathParamsList,
-    target: pathParams,
-    itemIsLine: true,
-    labelIsHidden: false,
-  });
+  if (this.hasControls) {
+    this.addPathParams({
+      list: pathCoordsList,
+      target: pathCoordsAttrs,
+      itemIsLine: false,
+      labelIsHidden: true,
+    });
+    this.addPathParams({
+      list: pathParamsList,
+      target: pathParams,
+      itemIsLine: true,
+      labelIsHidden: false,
+    });
 
-  this.addWaveInputs();
+    this.addWaveInputs();
+  }
 };
 
 //---------------------------------------------
@@ -235,11 +253,13 @@ Arc.prototype.setPathCoords = function () {
   });
   this.arc.rect = this.arc.elem.getBBox();
 
-  this.setAllHelperArcParams();
-  this.setAllControlsParams();
+  if(this.hasControls) {
+    this.setAllHelperArcParams();
+    this.setAllControlsParams();
 
-  this.addWaves();
-  this.updateCode();
+    this.addWaves();
+    this.updateCode();
+  }
 };
 
 //---------------------------------------------
@@ -704,9 +724,10 @@ Arc.prototype.addWave = function (counter) {
 
 //---------------------------------------------
 
-Arc.prototype.updateCode = function () {
+Arc.prototype.getCode = function (isSlice) {
   var rect = this.arc.elem.getBBox();
   var strokeWidthHalf = this.strokeWidth / 2;
+  var slice = isSlice ? 'preserveAspectRatio="xMidYMid slice"' : '';
   var viewBox = [
     rect.x - strokeWidthHalf,
     rect.y - strokeWidthHalf,
@@ -717,11 +738,35 @@ Arc.prototype.updateCode = function () {
     return Math.round(item);
   });
   viewBox = viewBox.join(' ');
-  var output = '<svg viewBox="' + viewBox + '">' + this.arc.elem.outerHTML + '</svg>';
+  return '<svg viewBox="' + viewBox + '" ' + slice + '>' + this.arc.elem.outerHTML + '</svg>';
+};
+
+Arc.prototype.updateCode = function () {
+  var output = this.getCode();
   codeOutput.val(output);
 };
 
 //---------------------------------------------
+
+function getDemoArc(params) {
+  var wavePath = targetPath.clone();
+  var waveArc = new Arc(wavePath, false);
+
+  for (var key in params) {
+    waveArc[key] = params[key];
+  }
+  waveArc.strokeWidth = 20;
+
+  if (params.repeatBtn) {
+    waveArc.repeat = params.repeatBtn;
+  }
+
+  waveArc.getPathCoords();
+  waveArc.setPathCoords();
+  waveArc.addWaves();
+
+  return waveArc.getCode();
+}
 
 Arc.prototype.addWaveInputs = function () {
   var that = this;
@@ -729,13 +774,18 @@ Arc.prototype.addWaveInputs = function () {
   var items = [];
 
   for (var key in wavesInputsList) {
+    if (wavesInputsList[key].hidden) {
+      continue;
+    }
+    var demoPath = getDemoArc(wavesInputsList[key]);
+
     var button = $.create('button')
       .attr({
         type: 'button',
         name: prefix,
         id: key
       })
-      .html(key)
+      .html(demoPath)
       .addClass(prefix + '__button');
 
     var item = $.create('div')
@@ -746,24 +796,17 @@ Arc.prototype.addWaveInputs = function () {
 
     button.elem.addEventListener('click', function () {
       var params = wavesInputsList[this.id];
-      console.log(params);
 
       for (var key in params) {
         that[key] = +params[key];
-        // console.log(params[key]);
-        // console.log(that[key]);
       }
 
       if (+that.repeat === 0) {
         that.repeat = 3;
       }
-      else {
-        console.log(that.repeat);
-      }
 
       that.getPathCoords();
       that.setPathCoords();
-      // that.addWaves();
       that.updateInputs();
     });
   }
@@ -828,7 +871,7 @@ function getMouseY(event) {
 
 //---------------------------------------------
 
-// Code events
+// Popup events
 popup.forEach(function (item) {
   item.elem.addEventListener('click', function (event) {
     event.stopPropagation();
@@ -850,7 +893,7 @@ popupToggle.forEach(function (item) {
 
       // trick to get real scrollHeight
       content.style.maxHeight = '0';
-      container.style.maxHeight = (content.scrollHeight + 2) + 'px';
+      container.style.maxHeight = (content.scrollHeight + 10) + 'px';
       content.style.maxHeight = null;
 
       parent.classList.toggle(popupOpenedClass);
@@ -873,4 +916,4 @@ function closeOpened() {
 
 //---------------------------------------------
 
-var arc = new Arc();
+var arc = new Arc(targetPath, true);

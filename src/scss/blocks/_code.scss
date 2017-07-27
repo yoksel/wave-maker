@@ -3,12 +3,16 @@
   margin-left: 20px;
 
   &__textarea {
-    min-width: 350px;
-    box-sizing: border-box;
-    border: 0;
     background: transparent;
+    border: 3px solid transparent;
+    border-radius: 5px;
     font: inherit;
     font-size: 14px;
     line-height: 1.3;
+
+    &:focus {
+      outline: 0;
+      border-color: yellowgreen;
+    }
   }
 }
