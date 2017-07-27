@@ -28,14 +28,19 @@
       <div class="panel">
         <div class="panel__inner">
           <div class="path-params attrs"></div>
-          <div class="code">
-              <button class="code__button" type="button">Get code</button>
-              <div class="code__textarea-wrapper">
-                <textarea class="code__textarea"></textarea>
+
+          <div class="code popup">
+              <button class="code__toggle popup__toggle" type="button">Get code</button>
+              <div class="code__textarea-wrapper popup__container">
+                <textarea class="popup__content code__textarea"></textarea>
               </div>
           </div>
 
-          <div class="wave-types">
+          <div class="wave-types popup">
+            <button class="wave-types__toggle popup__toggle">View examples</button>
+            <div class="popup__container">
+              <div class="wave-types__items  popup__content"></div>
+            </div>
           </div>
         </div>
       </div>
