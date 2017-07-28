@@ -4,6 +4,7 @@ BODY {
 }
 
 BODY {
+  min-width: 600px;
   display: flex;
   background: #FFF;
   font: #{$font-size}/1.4 $font-family;

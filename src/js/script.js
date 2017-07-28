@@ -2,6 +2,7 @@
 
 var doc = document;
 var $ = tinyLib;
+var isCmdPressed = false;
 
 var svg = $.get('.svg');
 var targetPath = $.get('.shape-arc');
@@ -511,9 +512,9 @@ Arc.prototype.changeValueByKeyboard = function (event, input, error) {
 
   var step = 1;
 
-  if (event.shiftKey && (event.ctrlKey || input.isCmd)) {
+  if (event.shiftKey && (event.ctrlKey || isCmdPressed)) {
     step = 1000;
-  } else if (event.ctrlKey || input.isCmd) {
+  } else if (event.ctrlKey || isCmdPressed) {
     step = 100;
   } else if (event.shiftKey) {
     step = 10;
@@ -661,12 +662,12 @@ Arc.prototype.addPathParams = function (params) {
     });
 
     input.elem.addEventListener('keydown', function (event) {
-      setIsCmd.call(this, event);
+      setIsCmd(event);
       that.changeValueByKeyboard(event, this, error);
     });
 
     input.elem.addEventListener('keyup', function (event) {
-      unSetIsCmd.call(this, event);
+      unSetIsCmd(event);
     });
   });
 
@@ -848,16 +849,20 @@ function checkValue(errorElem) {
 function setIsCmd(event) {
   // Chrome || FF
   if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
-    this.isCmd = true;
+    isCmdPressed = true;
   }
 }
 
 function unSetIsCmd(event) {
   // Chrome || FF
   if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
-    this.isCmd = false;
+    isCmdPressed = false;
   }
 }
+doc.addEventListener('keyup', function (event) {
+  unSetIsCmd(event);
+});
+
 
 //---------------------------------------------
 
