@@ -25,6 +25,7 @@ var attrsClass = 'attrs';
 var itemClass = attrsClass + '__item';
 var itemLineClass = itemClass + '--line';
 var inputClass = attrsClass + '__input';
+var inputCheckboxClass = inputClass + '--checkbox';
 var inputErrorClass = inputClass + '--error';
 var labelClass = attrsClass + '__label';
 var labelLineClass = labelClass + '--line';
@@ -92,6 +93,30 @@ var pathParamsList = [{
     min: 1
   }
 ];
+
+var flags = $.get('.flags');
+var flagsList = [
+  {
+    prop: 'rotateLargeArc',
+    desc: 'larg-arc-flag',
+    type: 'checkbox',
+    disableCond: {
+      prop: 'repeat',
+      value: 0
+    }
+  },
+  {
+    prop: 'rotateSweep',
+    desc: 'sweep-flag',
+    type: 'checkbox',
+    disableCond: {
+      prop: 'repeat',
+      value: 0
+    }
+  }
+];
+
+var inputsToDisable = [];
 
 var wavesInputsList = {
   'radiowave': {
@@ -168,6 +193,7 @@ var wavesInputsList = {
     }
 };
 
+
 //---------------------------------------------
 
 var Arc = function (targetPath, hasControls) {
@@ -209,6 +235,12 @@ var Arc = function (targetPath, hasControls) {
     this.addPathParams({
       list: pathParamsList,
       target: pathParams,
+      itemIsLine: true,
+      labelIsHidden: false,
+    });
+    this.addPathParams({
+      list: flagsList,
+      target: flags,
       itemIsLine: true,
       labelIsHidden: false,
     });
@@ -543,13 +575,19 @@ Arc.prototype.updateInputs = function () {
 
   this.pathCoordsInputs.forEach(function (item) {
     var name = item.elem.name;
-    if (!that[name]) {
+    if (that[name] == null) {
       return;
     }
     var value = +item.elem.value;
     var newValue = that.pathCoordsSet[name] || that[name];
 
+    if (item.elem.type === 'checkbox') {
+      item.elem.checked = !!that[name];
+      return;
+    }
+
     item.elem.value = newValue;
+
     if (value !== newValue) {
       setInputWidth.apply(item.elem);
     }
@@ -564,7 +602,7 @@ Arc.prototype.createInput = function (item) {
 
   var input = $.create('input')
     .attr({
-      type: 'text',
+      type: item.type || 'text',
       name: name,
       id: name,
       value: value
@@ -589,6 +627,19 @@ Arc.prototype.createInput = function (item) {
     input.attr({
       'disabled': ''
     });
+  }
+
+  if (item.disableCond) {
+    var cond = item.disableCond;
+
+    if (this[cond.prop] === cond.value) {
+      input.elem.disabled = true;
+    }
+
+    inputsToDisable.push({
+      input: input,
+      disableCond: item.disableCond
+    })
   }
 
   return input;
@@ -659,19 +710,56 @@ Arc.prototype.addPathParams = function (params) {
       that[this.name] = this.value;
       that.getPathCoords();
       that.setPathCoords();
+      disableInputs.call(this);
     });
 
     input.elem.addEventListener('keydown', function (event) {
+      if (this.type !== 'text') {
+        return;
+      }
       setIsCmd(event);
       that.changeValueByKeyboard(event, this, error);
+      disableInputs.call(this);
     });
 
     input.elem.addEventListener('keyup', function (event) {
       unSetIsCmd(event);
     });
+
+    input.elem.addEventListener('click', function (event) {
+      if (this.type != 'checkbox') {
+        return;
+      }
+      that[this.name] = this.checked;
+
+      that.getPathCoords();
+      that.setPathCoords();
+    });
+
   });
 
   target.append(items);
+};
+
+//---------------------------------------------
+
+function disableInputs () {
+  var inputId = this.id;
+  var inputValue = +this.value;
+
+  inputsToDisable.forEach(function (item) {
+    var input = item.input;
+    var cond = item.disableCond;
+
+    if (inputId === cond.prop) {
+      if (inputValue === cond.value) {
+        input.elem.disabled = true;
+      }
+      else {
+        input.elem.disabled = false;
+      }
+    }
+  });
 };
 
 //---------------------------------------------
@@ -741,6 +829,8 @@ Arc.prototype.getCode = function (isSlice) {
   viewBox = viewBox.join(' ');
   return '<svg viewBox="' + viewBox + '" ' + slice + '>' + this.arc.elem.outerHTML + '</svg>';
 };
+
+//---------------------------------------------
 
 Arc.prototype.updateCode = function () {
   var output = this.getCode();
@@ -818,6 +908,10 @@ Arc.prototype.addWaveInputs = function () {
 //---------------------------------------------
 
 function setInputWidth() {
+  if (this.type !== 'text') {
+    return;
+  }
+
   this.style.minWidth = this.value.length * .65 + 'em';
 }
 

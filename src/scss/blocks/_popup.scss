@@ -1,6 +1,7 @@
 .popup {
   position: relative;
   margin-left: 20px;
+  align-self: baseline;
 
   &__toggle {
     height: 30px;
@@ -28,7 +29,7 @@
     overflow: hidden;
     display: flex;
     border-radius: 5px;
-    transition: all .5s;
+    transition: all .4s;
   }
 
   &--opened &__container {
