@@ -128,7 +128,8 @@ var wavesInputsList = {
     sweep: 0,
     repeat: 4,
     rotateSweep: 1,
-    rotateLargeArc: 0
+    rotateLargeArc: 0,
+    strokeWidthBtn: 18
   },
   seawave: {
     startX: 150,
@@ -141,8 +142,10 @@ var wavesInputsList = {
     largeArc: 0,
     sweep: 0,
     repeat: 4,
+    repeatBtn: 2,
     rotateSweep: 0,
-    rotateLargeArc: 0
+    rotateLargeArc: 0,
+    strokeWidthBtn: 11
   },
   lightbulbs: {
     startX: 150,
@@ -154,11 +157,10 @@ var wavesInputsList = {
     xRot: 0,
     largeArc: 1,
     sweep: 1,
-    repeatBtn: 8,
     repeat: 6,
     rotateSweep: 1,
     rotateLargeArc: 0,
-    strokeWidth: 23
+    strokeWidthBtn: 21
   },
   cursive: {
     startX: 150,
@@ -187,7 +189,7 @@ var wavesInputsList = {
     repeat: 7,
     rotateSweep: 1,
     rotateLargeArc: 1,
-    strokeWidth: 16
+    strokeWidthBtn: 16
   },
   leaves: {
     startX: 150,
@@ -202,7 +204,7 @@ var wavesInputsList = {
     repeat: 7,
     rotateSweep: 0,
     rotateLargeArc: 0,
-    strokeWidth: 15
+    strokeWidthBtn: 15
   },
   circle: {
     hidden: true,
@@ -864,7 +866,6 @@ Arc.prototype.addWave = function (counter) {
 Arc.prototype.getCode = function (isSlice) {
   var rect = this.arc.elem.getBBox();
   var strokeWidthHalf = this.strokeWidth / 2;
-  var slice = isSlice ? 'preserveAspectRatio="xMidYMid slice"' : '';
   var viewBox = [
     rect.x - strokeWidthHalf,
     rect.y - strokeWidthHalf,
@@ -875,7 +876,19 @@ Arc.prototype.getCode = function (isSlice) {
     return Math.round(item);
   });
   viewBox = viewBox.join(' ');
-  return '<svg viewBox="' + viewBox + '" ' + slice + '>' + this.arc.elem.outerHTML + '</svg>';
+
+  var attrs = [
+    'viewBox="' + viewBox + '"'
+  ];
+
+  if (isSlice) {
+    attrs.push('preserveAspectRatio="xMidYMid slice"');
+  }
+
+  var result = '<svg ' + attrs.join(' ') + '>';
+  result += this.arc.elem.outerHTML + '</svg>'
+
+  return result;
 };
 
 //---------------------------------------------
@@ -896,7 +909,7 @@ function getDemoArc(params) {
   for (var key in params) {
     waveArc[key] = params[key];
   }
-  waveArc.strokeWidth = params.strokeWidth || 20;
+  waveArc.strokeWidth = params.strokeWidthBtn || 20;
 
   if (params.repeatBtn) {
     waveArc.repeat = params.repeatBtn;
