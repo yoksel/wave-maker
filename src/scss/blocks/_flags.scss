@@ -1,0 +1,12 @@
+.flags {
+
+  margin-top: 15px;
+
+  &__text {
+    margin-top: 5px;
+    flex-basis: 100%;
+    order: 2;
+    font-size: 14px;
+    color: #333;
+  }
+}

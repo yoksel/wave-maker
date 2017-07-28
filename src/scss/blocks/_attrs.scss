@@ -26,6 +26,7 @@
     line-height: 1;
     color: #FFF;
     transition: all .25s;
+    font-size: 1.2rem;
     font-family: Courier New, Courier, monospace;
 
     &--boolean {
@@ -126,18 +127,24 @@
   &__input:focus ~ &__label {
     opacity: 1;
   }
+
   &__input--error ~ &__label {
     color: orangered;
   }
 
   &__error {
     position: absolute;
-    bottom: -1.5rem;
+    bottom: -1.5em;
     left: 50%;
     opacity: 0;
     transform: translateX(-50%);
     font: 16px/1 Arial, sans-serif;
     color: orangered;
+  }
+
+  &__item--line &__error {
+    top: -1.5em;
+    bottom: auto;
   }
 
   &__input--error:focus ~ &__error {

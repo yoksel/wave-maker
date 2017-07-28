@@ -13,11 +13,8 @@ var popupToggle = $.get('.popup__toggle');
 
 var code = $.get('.code');
 var codeOutput = $.get('.code__textarea');
-var codeWrapper = $.get('.code__textarea-wrapper');
 var codeButton = $.get('.code__toggle');
 
-var waveTypes = $.get('.wave-types');
-var waveTypesToggle = $.get('.wave-types__toggle');
 var waveTypesItems = $.get('.wave-types__items');
 
 var pathCoordsAttrs = $.get('.path-coords__attrs');
@@ -25,12 +22,12 @@ var attrsClass = 'attrs';
 var itemClass = attrsClass + '__item';
 var itemLineClass = itemClass + '--line';
 var inputClass = attrsClass + '__input';
-var inputCheckboxClass = inputClass + '--checkbox';
 var inputErrorClass = inputClass + '--error';
 var labelClass = attrsClass + '__label';
 var labelLineClass = labelClass + '--line';
 var labelHiddenClass = labelClass + '--hidden';
 var errorClass = attrsClass + '__error';
+
 var pathCoordsList = [{
     prop: 'startLetter'
   },
@@ -176,6 +173,20 @@ var wavesInputsList = {
     'rotateSweep': 1,
     'rotateLargeArc': 0
   },
+  'bubbles': {
+    'startX': 150,
+    'startY': 220,
+    'rX': 80,
+    'rY': 80,
+    'endX': 230,
+    'endY': 130,
+    'xRot': 0,
+    'largeArc': 0,
+    'sweep': 0,
+    'repeat': 7,
+    'rotateSweep': 1,
+    'rotateLargeArc': 1
+  },
   'circle': {
     'hidden': true,
     'startX': 200,
@@ -192,7 +203,6 @@ var wavesInputsList = {
     'rotateLargeArc': 1
     }
 };
-
 
 //---------------------------------------------
 
@@ -559,6 +569,7 @@ Arc.prototype.changeValueByKeyboard = function (event, input, error) {
   }
 
   setInputWidth.apply(input);
+
   if (!checkValue.apply(input, [error])) {
     return false;
   }
@@ -591,6 +602,8 @@ Arc.prototype.updateInputs = function () {
     if (value !== newValue) {
       setInputWidth.apply(item.elem);
     }
+
+    disableInputs.call(item.elem);
   });
 };
 
@@ -628,6 +641,12 @@ Arc.prototype.createInput = function (item) {
       'disabled': ''
     });
   }
+  else if (typeof (value) === 'boolean' && value === true) {
+    input.attr({
+      checked: value
+    });
+  }
+
 
   if (item.disableCond) {
     var cond = item.disableCond;
@@ -670,6 +689,18 @@ Arc.prototype.createLabel = function (item, params) {
 
 //---------------------------------------------
 
+Arc.prototype.createError = function (item) {
+  if (item.min === undefined && item.max === undefined) {
+    return null;
+  }
+  var error = $.create('span')
+    .addClass(errorClass);
+
+  return error;
+};
+
+//---------------------------------------------
+
 Arc.prototype.addPathParams = function (params) {
   var that = this;
   var list = params.list;
@@ -684,8 +715,7 @@ Arc.prototype.addPathParams = function (params) {
 
     var label = that.createLabel(item, params);
 
-    var error = $.create('span')
-      .addClass(errorClass);
+    var error = that.createError(item);
 
     var item = $.create('span')
       .addClass([
@@ -743,6 +773,7 @@ Arc.prototype.addPathParams = function (params) {
 
 //---------------------------------------------
 
+// context: input
 function disableInputs () {
   var inputId = this.id;
   var inputValue = +this.value;
@@ -835,6 +866,8 @@ Arc.prototype.getCode = function (isSlice) {
 Arc.prototype.updateCode = function () {
   var output = this.getCode();
   codeOutput.val(output);
+
+  changeContentHeight.call(codeButton.elem);
 };
 
 //---------------------------------------------
@@ -918,6 +951,10 @@ function setInputWidth() {
 //---------------------------------------------
 
 function checkValue(errorElem) {
+  if (!errorElem) {
+    return true;
+  }
+
   errorElem.html('');
   this.classList.remove(inputErrorClass);
 
@@ -987,13 +1024,7 @@ popupToggle.forEach(function (item) {
     }
     else {
       closeOpened();
-      var container = parent.querySelector('.popup__container');
-      var content = parent.querySelector('.popup__content');
-
-      // trick to get real scrollHeight
-      content.style.maxHeight = '0';
-      container.style.maxHeight = (content.scrollHeight + 10) + 'px';
-      content.style.maxHeight = null;
+      changeContentHeight.call(this);
 
       parent.classList.toggle(popupOpenedClass);
     }
@@ -1011,6 +1042,18 @@ function closeOpened() {
   if (popupPanel.elem) {
     popupPanel.removeClass(popupOpenedClass);
   }
+
+}
+
+function changeContentHeight() {
+  var parent = this.parentNode;
+  var container = parent.querySelector('.popup__container');
+  var content = parent.querySelector('.popup__content');
+
+  // trick to get real scrollHeight
+  content.style.maxHeight = '0';
+  container.style.maxHeight = (content.scrollHeight + 10) + 'px';
+  content.style.maxHeight = null;
 }
 
 //---------------------------------------------

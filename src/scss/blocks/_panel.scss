@@ -1,0 +1,38 @@
+.panel {
+  min-height: 100px;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+  background: #000;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #555;
+
+  &--codefont {
+    font-size: 1.2rem;
+    font-family: Courier New, Courier, monospace;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: row;
+    align-self: stretch;
+
+    &--props {
+      max-width: 300px;
+      flex-direction: column;
+    }
+  }
+}
