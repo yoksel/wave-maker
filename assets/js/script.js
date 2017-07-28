@@ -2,6 +2,7 @@
 
 var doc = document;
 var $ = tinyLib;
+var isCmdPressed = false;
 
 var svg = $.get('.svg');
 var targetPath = $.get('.shape-arc');
@@ -12,11 +13,8 @@ var popupToggle = $.get('.popup__toggle');
 
 var code = $.get('.code');
 var codeOutput = $.get('.code__textarea');
-var codeWrapper = $.get('.code__textarea-wrapper');
 var codeButton = $.get('.code__toggle');
 
-var waveTypes = $.get('.wave-types');
-var waveTypesToggle = $.get('.wave-types__toggle');
 var waveTypesItems = $.get('.wave-types__items');
 
 var pathCoordsAttrs = $.get('.path-coords__attrs');
@@ -29,6 +27,7 @@ var labelClass = attrsClass + '__label';
 var labelLineClass = labelClass + '--line';
 var labelHiddenClass = labelClass + '--hidden';
 var errorClass = attrsClass + '__error';
+
 var pathCoordsList = [{
     prop: 'startLetter'
   },
@@ -92,78 +91,135 @@ var pathParamsList = [{
   }
 ];
 
+var flags = $.get('.flags');
+var flagsList = [
+  {
+    prop: 'rotateLargeArc',
+    desc: 'larg-arc-flag',
+    type: 'checkbox',
+    disableCond: {
+      prop: 'repeat',
+      value: 0
+    }
+  },
+  {
+    prop: 'rotateSweep',
+    desc: 'sweep-flag',
+    type: 'checkbox',
+    disableCond: {
+      prop: 'repeat',
+      value: 0
+    }
+  }
+];
+
+var inputsToDisable = [];
+
 var wavesInputsList = {
-  'radiowave': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 100,
-    'endY': 200,
-    'endX': 300,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  radiowave: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 100,
+    endY: 200,
+    endX: 300,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 4,
+    rotateSweep: 1,
+    rotateLargeArc: 0,
+    strokeWidthBtn: 18
   },
-  'seawave': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 100,
-    'endX': 300,
-    'endY': 200,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 0,
-    'rotateLargeArc': 0
+  seawave: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 100,
+    endX: 300,
+    endY: 200,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 4,
+    repeatBtn: 2,
+    rotateSweep: 0,
+    rotateLargeArc: 0,
+    strokeWidthBtn: 11
   },
-  'lightbulbs': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 80,
-    'endX': 250,
-    'endY': 200,
-    'xRot': 0,
-    'largeArc': 1,
-    'sweep': 1,
-    'repeatBtn': 8,
-    'repeat': 6,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  lightbulbs: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 80,
+    endX: 250,
+    endY: 200,
+    xRot: 0,
+    largeArc: 1,
+    sweep: 1,
+    repeat: 6,
+    rotateSweep: 1,
+    rotateLargeArc: 0,
+    strokeWidthBtn: 21
   },
-  'cursive': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 20,
-    'rY': 90,
-    'endX': 300,
-    'endY': 200,
-    'xRot': 60,
-    'largeArc': 1,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  cursive: {
+    startX: 150,
+    startY: 200,
+    rX: 20,
+    rY: 90,
+    endX: 300,
+    endY: 200,
+    xRot: 60,
+    largeArc: 1,
+    sweep: 0,
+    repeat: 4,
+    rotateSweep: 1,
+    rotateLargeArc: 0
   },
-  'circle': {
-    'hidden': true,
-    'startX': 200,
-    'startY': 50,
-    'rX': 100,
-    'rY': 100,
-    'endX': 200,
-    'endY': 300,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 1,
-    'rotateSweep': 0,
-    'rotateLargeArc': 1
+  bubbles: {
+    startX: 150,
+    startY: 220,
+    rX: 80,
+    rY: 80,
+    endX: 230,
+    endY: 130,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 7,
+    rotateSweep: 1,
+    rotateLargeArc: 1,
+    strokeWidthBtn: 16
+  },
+  leaves: {
+    startX: 150,
+    startY: 220,
+    rX: 160,
+    rY: 200,
+    endX: 230,
+    endY: 50,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 1,
+    repeat: 7,
+    rotateSweep: 0,
+    rotateLargeArc: 0,
+    strokeWidthBtn: 15
+  },
+  circle: {
+    hidden: true,
+    startX: 200,
+    startY: 50,
+    rX: 100,
+    rY: 100,
+    endX: 200,
+    endY: 300,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 1,
+    rotateSweep: 0,
+    rotateLargeArc: 1
     }
 };
 
@@ -208,6 +264,12 @@ var Arc = function (targetPath, hasControls) {
     this.addPathParams({
       list: pathParamsList,
       target: pathParams,
+      itemIsLine: true,
+      labelIsHidden: false,
+    });
+    this.addPathParams({
+      list: flagsList,
+      target: flags,
       itemIsLine: true,
       labelIsHidden: false,
     });
@@ -511,9 +573,9 @@ Arc.prototype.changeValueByKeyboard = function (event, input, error) {
 
   var step = 1;
 
-  if (event.shiftKey && (event.ctrlKey || input.isCmd)) {
+  if (event.shiftKey && (event.ctrlKey || isCmdPressed)) {
     step = 1000;
-  } else if (event.ctrlKey || input.isCmd) {
+  } else if (event.ctrlKey || isCmdPressed) {
     step = 100;
   } else if (event.shiftKey) {
     step = 10;
@@ -526,6 +588,7 @@ Arc.prototype.changeValueByKeyboard = function (event, input, error) {
   }
 
   setInputWidth.apply(input);
+
   if (!checkValue.apply(input, [error])) {
     return false;
   }
@@ -542,16 +605,24 @@ Arc.prototype.updateInputs = function () {
 
   this.pathCoordsInputs.forEach(function (item) {
     var name = item.elem.name;
-    if (!that[name]) {
+    if (that[name] == null) {
       return;
     }
     var value = +item.elem.value;
     var newValue = that.pathCoordsSet[name] || that[name];
 
+    if (item.elem.type === 'checkbox') {
+      item.elem.checked = !!that[name];
+      return;
+    }
+
     item.elem.value = newValue;
+
     if (value !== newValue) {
       setInputWidth.apply(item.elem);
     }
+
+    disableInputs.call(item.elem);
   });
 };
 
@@ -563,7 +634,7 @@ Arc.prototype.createInput = function (item) {
 
   var input = $.create('input')
     .attr({
-      type: 'text',
+      type: item.type || 'text',
       name: name,
       id: name,
       value: value
@@ -588,6 +659,25 @@ Arc.prototype.createInput = function (item) {
     input.attr({
       'disabled': ''
     });
+  }
+  else if (typeof (value) === 'boolean' && value === true) {
+    input.attr({
+      checked: value
+    });
+  }
+
+
+  if (item.disableCond) {
+    var cond = item.disableCond;
+
+    if (this[cond.prop] === cond.value) {
+      input.elem.disabled = true;
+    }
+
+    inputsToDisable.push({
+      input: input,
+      disableCond: item.disableCond
+    })
   }
 
   return input;
@@ -618,6 +708,18 @@ Arc.prototype.createLabel = function (item, params) {
 
 //---------------------------------------------
 
+Arc.prototype.createError = function (item) {
+  if (item.min === undefined && item.max === undefined) {
+    return null;
+  }
+  var error = $.create('span')
+    .addClass(errorClass);
+
+  return error;
+};
+
+//---------------------------------------------
+
 Arc.prototype.addPathParams = function (params) {
   var that = this;
   var list = params.list;
@@ -632,8 +734,7 @@ Arc.prototype.addPathParams = function (params) {
 
     var label = that.createLabel(item, params);
 
-    var error = $.create('span')
-      .addClass(errorClass);
+    var error = that.createError(item);
 
     var item = $.create('span')
       .addClass([
@@ -658,19 +759,57 @@ Arc.prototype.addPathParams = function (params) {
       that[this.name] = this.value;
       that.getPathCoords();
       that.setPathCoords();
+      disableInputs.call(this);
     });
 
     input.elem.addEventListener('keydown', function (event) {
-      setIsCmd.call(this, event);
+      if (this.type !== 'text') {
+        return;
+      }
+      setIsCmd(event);
       that.changeValueByKeyboard(event, this, error);
+      disableInputs.call(this);
     });
 
     input.elem.addEventListener('keyup', function (event) {
-      unSetIsCmd.call(this, event);
+      unSetIsCmd(event);
     });
+
+    input.elem.addEventListener('click', function (event) {
+      if (this.type != 'checkbox') {
+        return;
+      }
+      that[this.name] = this.checked;
+
+      that.getPathCoords();
+      that.setPathCoords();
+    });
+
   });
 
   target.append(items);
+};
+
+//---------------------------------------------
+
+// context: input
+function disableInputs () {
+  var inputId = this.id;
+  var inputValue = +this.value;
+
+  inputsToDisable.forEach(function (item) {
+    var input = item.input;
+    var cond = item.disableCond;
+
+    if (inputId === cond.prop) {
+      if (inputValue === cond.value) {
+        input.elem.disabled = true;
+      }
+      else {
+        input.elem.disabled = false;
+      }
+    }
+  });
 };
 
 //---------------------------------------------
@@ -727,7 +866,6 @@ Arc.prototype.addWave = function (counter) {
 Arc.prototype.getCode = function (isSlice) {
   var rect = this.arc.elem.getBBox();
   var strokeWidthHalf = this.strokeWidth / 2;
-  var slice = isSlice ? 'preserveAspectRatio="xMidYMid slice"' : '';
   var viewBox = [
     rect.x - strokeWidthHalf,
     rect.y - strokeWidthHalf,
@@ -738,12 +876,28 @@ Arc.prototype.getCode = function (isSlice) {
     return Math.round(item);
   });
   viewBox = viewBox.join(' ');
-  return '<svg viewBox="' + viewBox + '" ' + slice + '>' + this.arc.elem.outerHTML + '</svg>';
+
+  var attrs = [
+    'viewBox="' + viewBox + '"'
+  ];
+
+  if (isSlice) {
+    attrs.push('preserveAspectRatio="xMidYMid slice"');
+  }
+
+  var result = '<svg ' + attrs.join(' ') + '>';
+  result += this.arc.elem.outerHTML + '</svg>'
+
+  return result;
 };
+
+//---------------------------------------------
 
 Arc.prototype.updateCode = function () {
   var output = this.getCode();
   codeOutput.val(output);
+
+  changeContentHeight.call(codeButton.elem);
 };
 
 //---------------------------------------------
@@ -755,7 +909,7 @@ function getDemoArc(params) {
   for (var key in params) {
     waveArc[key] = params[key];
   }
-  waveArc.strokeWidth = 20;
+  waveArc.strokeWidth = params.strokeWidthBtn || 20;
 
   if (params.repeatBtn) {
     waveArc.repeat = params.repeatBtn;
@@ -817,12 +971,20 @@ Arc.prototype.addWaveInputs = function () {
 //---------------------------------------------
 
 function setInputWidth() {
+  if (this.type !== 'text') {
+    return;
+  }
+
   this.style.minWidth = this.value.length * .65 + 'em';
 }
 
 //---------------------------------------------
 
 function checkValue(errorElem) {
+  if (!errorElem) {
+    return true;
+  }
+
   errorElem.html('');
   this.classList.remove(inputErrorClass);
 
@@ -848,16 +1010,20 @@ function checkValue(errorElem) {
 function setIsCmd(event) {
   // Chrome || FF
   if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
-    this.isCmd = true;
+    isCmdPressed = true;
   }
 }
 
 function unSetIsCmd(event) {
   // Chrome || FF
   if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
-    this.isCmd = false;
+    isCmdPressed = false;
   }
 }
+doc.addEventListener('keyup', function (event) {
+  unSetIsCmd(event);
+});
+
 
 //---------------------------------------------
 
@@ -888,13 +1054,7 @@ popupToggle.forEach(function (item) {
     }
     else {
       closeOpened();
-      var container = parent.querySelector('.popup__container');
-      var content = parent.querySelector('.popup__content');
-
-      // trick to get real scrollHeight
-      content.style.maxHeight = '0';
-      container.style.maxHeight = (content.scrollHeight + 10) + 'px';
-      content.style.maxHeight = null;
+      changeContentHeight.call(this);
 
       parent.classList.toggle(popupOpenedClass);
     }
@@ -912,6 +1072,18 @@ function closeOpened() {
   if (popupPanel.elem) {
     popupPanel.removeClass(popupOpenedClass);
   }
+
+}
+
+function changeContentHeight() {
+  var parent = this.parentNode;
+  var container = parent.querySelector('.popup__container');
+  var content = parent.querySelector('.popup__content');
+
+  // trick to get real scrollHeight
+  content.style.maxHeight = '0';
+  container.style.maxHeight = (content.scrollHeight + 10) + 'px';
+  content.style.maxHeight = null;
 }
 
 //---------------------------------------------
