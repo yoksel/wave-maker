@@ -116,91 +116,108 @@ var flagsList = [
 var inputsToDisable = [];
 
 var wavesInputsList = {
-  'radiowave': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 100,
-    'endY': 200,
-    'endX': 300,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  radiowave: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 100,
+    endY: 200,
+    endX: 300,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 4,
+    rotateSweep: 1,
+    rotateLargeArc: 0
   },
-  'seawave': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 100,
-    'endX': 300,
-    'endY': 200,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 0,
-    'rotateLargeArc': 0
+  seawave: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 100,
+    endX: 300,
+    endY: 200,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 4,
+    rotateSweep: 0,
+    rotateLargeArc: 0
   },
-  'lightbulbs': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 80,
-    'rY': 80,
-    'endX': 250,
-    'endY': 200,
-    'xRot': 0,
-    'largeArc': 1,
-    'sweep': 1,
-    'repeatBtn': 8,
-    'repeat': 6,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  lightbulbs: {
+    startX: 150,
+    startY: 200,
+    rX: 80,
+    rY: 80,
+    endX: 250,
+    endY: 200,
+    xRot: 0,
+    largeArc: 1,
+    sweep: 1,
+    repeatBtn: 8,
+    repeat: 6,
+    rotateSweep: 1,
+    rotateLargeArc: 0,
+    strokeWidth: 23
   },
-  'cursive': {
-    'startX': 150,
-    'startY': 200,
-    'rX': 20,
-    'rY': 90,
-    'endX': 300,
-    'endY': 200,
-    'xRot': 60,
-    'largeArc': 1,
-    'sweep': 0,
-    'repeat': 4,
-    'rotateSweep': 1,
-    'rotateLargeArc': 0
+  cursive: {
+    startX: 150,
+    startY: 200,
+    rX: 20,
+    rY: 90,
+    endX: 300,
+    endY: 200,
+    xRot: 60,
+    largeArc: 1,
+    sweep: 0,
+    repeat: 4,
+    rotateSweep: 1,
+    rotateLargeArc: 0
   },
-  'bubbles': {
-    'startX': 150,
-    'startY': 220,
-    'rX': 80,
-    'rY': 80,
-    'endX': 230,
-    'endY': 130,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 7,
-    'rotateSweep': 1,
-    'rotateLargeArc': 1
+  bubbles: {
+    startX: 150,
+    startY: 220,
+    rX: 80,
+    rY: 80,
+    endX: 230,
+    endY: 130,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 7,
+    rotateSweep: 1,
+    rotateLargeArc: 1,
+    strokeWidth: 16
   },
-  'circle': {
-    'hidden': true,
-    'startX': 200,
-    'startY': 50,
-    'rX': 100,
-    'rY': 100,
-    'endX': 200,
-    'endY': 300,
-    'xRot': 0,
-    'largeArc': 0,
-    'sweep': 0,
-    'repeat': 1,
-    'rotateSweep': 0,
-    'rotateLargeArc': 1
+  leaves: {
+    startX: 150,
+    startY: 220,
+    rX: 160,
+    rY: 200,
+    endX: 230,
+    endY: 50,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 1,
+    repeat: 7,
+    rotateSweep: 0,
+    rotateLargeArc: 0,
+    strokeWidth: 15
+  },
+  circle: {
+    hidden: true,
+    startX: 200,
+    startY: 50,
+    rX: 100,
+    rY: 100,
+    endX: 200,
+    endY: 300,
+    xRot: 0,
+    largeArc: 0,
+    sweep: 0,
+    repeat: 1,
+    rotateSweep: 0,
+    rotateLargeArc: 1
     }
 };
 
@@ -879,7 +896,7 @@ function getDemoArc(params) {
   for (var key in params) {
     waveArc[key] = params[key];
   }
-  waveArc.strokeWidth = 20;
+  waveArc.strokeWidth = params.strokeWidth || 20;
 
   if (params.repeatBtn) {
     waveArc.repeat = params.repeatBtn;
