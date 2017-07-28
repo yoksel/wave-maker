@@ -864,7 +864,10 @@ Arc.prototype.addWave = function (counter) {
 //---------------------------------------------
 
 Arc.prototype.getCode = function (isSlice) {
-  var rect = this.arc.elem.getBBox();
+  var arcCopy = this.arc.clone();
+  arcCopy.elem.removeAttribute('class');
+
+  var rect = arcCopy.elem.getBBox();
   var strokeWidthHalf = this.strokeWidth / 2;
   var viewBox = [
     rect.x - strokeWidthHalf,
@@ -872,6 +875,7 @@ Arc.prototype.getCode = function (isSlice) {
     rect.width + +this.strokeWidth,
     rect.height + +this.strokeWidth
   ];
+
   viewBox = viewBox.map(function (item) {
     return Math.round(item);
   });
@@ -886,7 +890,7 @@ Arc.prototype.getCode = function (isSlice) {
   }
 
   var result = '<svg ' + attrs.join(' ') + '>';
-  result += this.arc.elem.outerHTML + '</svg>'
+  result += arcCopy.elem.outerHTML + '</svg>'
 
   return result;
 };
