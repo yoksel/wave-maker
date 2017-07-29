@@ -127,8 +127,8 @@ var wavesInputsList = {
     largeArc: 0,
     sweep: 0,
     repeat: 4,
-    rotateSweep: 1,
-    rotateLargeArc: 0,
+    rotateSweep: true,
+    rotateLargeArc: false,
     strokeWidthBtn: 18
   },
   seawave: {
@@ -143,8 +143,8 @@ var wavesInputsList = {
     sweep: 0,
     repeat: 4,
     repeatBtn: 2,
-    rotateSweep: 0,
-    rotateLargeArc: 0,
+    rotateSweep: false,
+    rotateLargeArc: false,
     strokeWidthBtn: 11
   },
   lightbulbs: {
@@ -158,8 +158,8 @@ var wavesInputsList = {
     largeArc: 1,
     sweep: 1,
     repeat: 6,
-    rotateSweep: 1,
-    rotateLargeArc: 0,
+    rotateSweep: true,
+    rotateLargeArc: false,
     strokeWidthBtn: 21
   },
   cursive: {
@@ -173,8 +173,9 @@ var wavesInputsList = {
     largeArc: 1,
     sweep: 0,
     repeat: 4,
-    rotateSweep: 1,
-    rotateLargeArc: 0
+    rotateSweep: true,
+    rotateLargeArc: false,
+    strokeWidthBtn: 20
   },
   bubbles: {
     startX: 150,
@@ -187,8 +188,8 @@ var wavesInputsList = {
     largeArc: 0,
     sweep: 0,
     repeat: 7,
-    rotateSweep: 1,
-    rotateLargeArc: 1,
+    rotateSweep: true,
+    rotateLargeArc: true,
     strokeWidthBtn: 16
   },
   leaves: {
@@ -202,8 +203,8 @@ var wavesInputsList = {
     largeArc: 0,
     sweep: 1,
     repeat: 7,
-    rotateSweep: 0,
-    rotateLargeArc: 0,
+    rotateSweep: false,
+    rotateLargeArc: false,
     strokeWidthBtn: 15
   },
   circle: {
@@ -218,39 +219,41 @@ var wavesInputsList = {
     largeArc: 0,
     sweep: 0,
     repeat: 1,
-    rotateSweep: 0,
-    rotateLargeArc: 1
+    rotateSweep: false,
+    rotateLargeArc: true
     }
 };
 
 //---------------------------------------------
 
-var Arc = function (targetPath, hasControls) {
-  this.arc = targetPath;
-  this.hasControls = hasControls || false;
+var Arc = function (params) {
+
+  this.params = params;
+  this.path = params.path || targetPath;
+  this.hasControls = params.hasControls || false;
   this.startLetter = 'M';
   this.arcLetter = 'A';
-  this.startX = 150;
-  this.startY = 200;
-  this.endX = 400;
-  this.endY = 200;
-  this.rX = 130;
-  this.rY = 120;
-  this.xRot = 0;
-  this.largeArc = 0;
-  this.sweep = 0;
-  this.repeat = 0;
-  this.strokeWidth = 5;
+  this.startX = params.startX || 150;
+  this.startY = params.startY || 200;
+  this.endX = params.endX || 400;
+  this.endY = params.endY || 200;
+  this.rX = params.rX || 130;
+  this.rY = params.rY || 120;
+  this.xRot = params.xRot || 0;
+  this.largeArc = params.largeArc || 0;
+  this.sweep = params.sweep || 0;
+  this.repeat = params.repeat || 0;
+  this.strokeWidth = params.strokeWidth || 5;
   this.pathCoordsInputs = [];
 
-  this.rotateSweep = true;
-  this.rotateLargeArc = false;
+  this.rotateSweep = params.rotateSweep !== undefined ? params.rotateSweep : true;
+  this.rotateLargeArc = params.rotateLargeArc !== undefined ? params.rotateLargeArc : false;
 
   if (this.hasControls) {
     this.addHelpers();
     this.addControls();
-  }
 
+  }
   this.getPathCoords();
   this.setPathCoords();
 
@@ -309,17 +312,17 @@ Arc.prototype.getPathCoords = function () {
 //---------------------------------------------
 
 Arc.prototype.setPathCoords = function () {
-  this.arc.attr({
+  this.path.attr({
     'd': this.pathCoords,
     'stroke-width': this.strokeWidth
   });
-  this.arc.rect = this.arc.elem.getBBox();
+  this.path.rect = this.path.elem.getBBox();
+
+  this.addWaves();
 
   if(this.hasControls) {
     this.setAllHelperArcParams();
     this.setAllControlsParams();
-
-    this.addWaves();
     this.updateCode();
   }
 };
@@ -419,13 +422,13 @@ Arc.prototype.getRX = function (event) {
 
 Arc.prototype.getRyCoords = function () {
   return {
-    cx: (this.arc.rect.x + this.arc.rect.width / 2),
-    cy: (this.arc.rect.y + this.arc.rect.height)
+    cx: (this.path.rect.x + this.path.rect.width / 2),
+    cy: (this.path.rect.y + this.path.rect.height)
   }
 };
 
 Arc.prototype.getRY = function (event) {
-  var rect = this.arc.rect;
+  var rect = this.path.rect;
   var offset = event.offsetY - (rect.y + rect.height);
   var rY = this.rY + offset;
   return rY;
@@ -494,8 +497,6 @@ Arc.prototype.addHelpers = function () {
     this.arcHelpers.flipArc,
     this.arcHelpers.flipSweep
   ];
-
-  // this.addHelperLine();
 };
 
 //---------------------------------------------
@@ -543,25 +544,6 @@ Arc.prototype.setAllHelperArcParams = function () {
   this.arcHelpers.list.map(function (item) {
     that.setHelperArcParams(item);
   });
-};
-
-//---------------------------------------------
-
-// Not used
-Arc.prototype.addHelperLine = function () {
-  var line = $.createNS('line').
-  attr({
-    x1: this.startX,
-    y1: this.startY,
-    x2: this.endX,
-    y2: this.endY,
-    'transform-origin': this.startX + ' ' + this.startX,
-    // transform: 'scale(2,1)',
-    stroke: 'red',
-    'stroke-width': 2
-  });
-
-  svg.prepend(line);
 };
 
 //---------------------------------------------
@@ -825,7 +807,7 @@ Arc.prototype.addWaves = function () {
   }
 
   var wavesParams = wavesParamsSet.join(' ');
-  this.arc.attr({
+  this.path.attr({
     'd': wavesParams
   });
 };
@@ -863,30 +845,61 @@ Arc.prototype.addWave = function (counter) {
 
 //---------------------------------------------
 
-Arc.prototype.getCode = function (isSlice) {
-  var rect = this.arc.elem.getBBox();
-  var strokeWidthHalf = this.strokeWidth / 2;
+Arc.prototype.cloneParams = function () {
+  var params = Object.assign({}, this.pathCoordsSet);
+  params.repeat = this.repeat;
+  params.rotateLargeArc = this.rotateLargeArc;
+  params.rotateSweep = this.rotateSweep;
+  params.strokeWidth = this.strokeWidth;
+
+  return params;
+};
+
+//---------------------------------------------
+
+Arc.prototype.getCode = function (params) {
+  var params = params;
+  var newParams = Object.assign({}, params);
+  newParams.path = this.path.clone()
+
+  if (newParams.strokeWidthBtn) {
+    newParams.strokeWidth = newParams.strokeWidthBtn;
+  }
+  if (newParams.repeatBtn) {
+    newParams.repeat = newParams.repeatBtn;
+  }
+
+  var newArc = new Arc(newParams);
+  var newPath = newArc.path;
+  var newPathElem = newPath.elem;
+  newPathElem.removeAttribute('class');
+
+  var copyRect = newPathElem.getBBox();
+  var strokeWidth = +newArc.strokeWidth;
+  var strokeWidthHalf = strokeWidth / 2;
+
+  newArc.startX -= copyRect.x - strokeWidthHalf;
+  newArc.startY -= copyRect.y - strokeWidthHalf;
+  newArc.endX -= copyRect.x - strokeWidthHalf;
+  newArc.endY -= copyRect.y - strokeWidthHalf;
+
+  newArc.getPathCoords();
+  newArc.setPathCoords();
+
   var viewBox = [
-    rect.x - strokeWidthHalf,
-    rect.y - strokeWidthHalf,
-    rect.width + +this.strokeWidth,
-    rect.height + +this.strokeWidth
+    0,
+    0,
+    copyRect.width + strokeWidth,
+    copyRect.height + strokeWidth
   ];
+
   viewBox = viewBox.map(function (item) {
     return Math.round(item);
   });
   viewBox = viewBox.join(' ');
 
-  var attrs = [
-    'viewBox="' + viewBox + '"'
-  ];
-
-  if (isSlice) {
-    attrs.push('preserveAspectRatio="xMidYMid slice"');
-  }
-
-  var result = '<svg ' + attrs.join(' ') + '>';
-  result += this.arc.elem.outerHTML + '</svg>'
+  var result = '<svg viewBox="' + viewBox + '">';
+  result += newPathElem.outerHTML + '</svg>'
 
   return result;
 };
@@ -894,7 +907,7 @@ Arc.prototype.getCode = function (isSlice) {
 //---------------------------------------------
 
 Arc.prototype.updateCode = function () {
-  var output = this.getCode();
+  var output = this.getCode(this.cloneParams());
   codeOutput.val(output);
 
   changeContentHeight.call(codeButton.elem);
@@ -902,36 +915,18 @@ Arc.prototype.updateCode = function () {
 
 //---------------------------------------------
 
-function getDemoArc(params) {
-  var wavePath = targetPath.clone();
-  var waveArc = new Arc(wavePath, false);
-
-  for (var key in params) {
-    waveArc[key] = params[key];
-  }
-  waveArc.strokeWidth = params.strokeWidthBtn || 20;
-
-  if (params.repeatBtn) {
-    waveArc.repeat = params.repeatBtn;
-  }
-
-  waveArc.getPathCoords();
-  waveArc.setPathCoords();
-  waveArc.addWaves();
-
-  return waveArc.getCode();
-}
-
 Arc.prototype.addWaveInputs = function () {
   var that = this;
   var prefix = 'wave-types';
   var items = [];
 
   for (var key in wavesInputsList) {
-    if (wavesInputsList[key].hidden) {
+    var params = wavesInputsList[key];
+
+    if (params.hidden) {
       continue;
     }
-    var demoPath = getDemoArc(wavesInputsList[key]);
+    var demoPath = this.getCode(params);
 
     var button = $.create('button')
       .attr({
@@ -952,11 +947,7 @@ Arc.prototype.addWaveInputs = function () {
       var params = wavesInputsList[this.id];
 
       for (var key in params) {
-        that[key] = +params[key];
-      }
-
-      if (+that.repeat === 0) {
-        that.repeat = 3;
+        that[key] = params[key];
       }
 
       that.getPathCoords();
@@ -1088,4 +1079,7 @@ function changeContentHeight() {
 
 //---------------------------------------------
 
-var arc = new Arc(targetPath, true);
+var arc = new Arc({
+  path: targetPath,
+  hasControls: true
+});
