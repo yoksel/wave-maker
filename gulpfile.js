@@ -90,14 +90,14 @@ gulp.task('serve', ['sass'], function() {
 
 // CLEAN BUILD
 gulp.task('clean', function(){
-  del(['build/*']).then(paths => {
+  del(['build/**']).then(paths => {
     console.log('⬤  Deleted files and folders:\n', paths.join('\n'));
   });
 });
 
 // CLEAN BUILD & COPY FILES TO IT
-gulp.task('copy', ['clean'], function() {
-  console.log(colors.magenta('⬤  Clear build/ and copy files to it... ⬤'));
+gulp.task('copy', function() {
+  console.log(colors.magenta('⬤  Copy files to build/... ⬤'));
 
   return gulp.src(['assets/**/*', '*.html'])
     .pipe(copy('build/'));

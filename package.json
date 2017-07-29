@@ -30,7 +30,7 @@
   "scripts": {
     "start": "gulp serve",
     "img": "gulp images",
-    "build": "gulp sass && gulp include && gulp copy",
+    "build": " gulp clean && gulp sass && gulp include && gulp copy",
     "deploy": "npm run build && gulp ghPages",
     "check": "editorconfig-tools check *",
     "fix": "editorconfig-tools fix *"
