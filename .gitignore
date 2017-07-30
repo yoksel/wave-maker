@@ -5,3 +5,4 @@ node_modules/
 build/
 assets/
 npm-debug.log
+index.html

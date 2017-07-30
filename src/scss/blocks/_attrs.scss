@@ -1,7 +1,6 @@
 .attrs {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
 
   &__item {
     position: relative;
@@ -50,6 +49,7 @@
       color: gold;
 
     }
+
     &--largeArc,
     &--sweep,
     &--xRot,
@@ -57,6 +57,7 @@
     &--strokeWidth {
       width: 1em;
     }
+
     &--error,
     &--error:focus {
       color: orangered;
@@ -75,7 +76,7 @@
 
     &--hidden {
       position: absolute;
-      top: -1.5em;
+      top: -1.3em;
       left: 50%;
       transform: translateX(-50%);
       opacity: 0;
@@ -134,7 +135,7 @@
 
   &__error {
     position: absolute;
-    bottom: -1.5em;
+    bottom: -1.3em;
     left: 50%;
     opacity: 0;
     transform: translateX(-50%);
@@ -143,7 +144,7 @@
   }
 
   &__item--line &__error {
-    top: -1.5em;
+    top: -1.3em;
     bottom: auto;
   }
 

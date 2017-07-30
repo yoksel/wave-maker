@@ -21,18 +21,23 @@
   &__inner {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
     white-space: nowrap;
+    line-height: 2;
   }
 
   &__column {
+    margin-bottom: 1em;
     display: flex;
     flex-direction: row;
-    align-self: stretch;
+    flex-basis: 50%;
 
     &--props {
-      max-width: 300px;
-      flex-direction: column;
+      flex-wrap: wrap;
+
+      @media (min-width: 700px) {
+        flex-wrap: nowrap;
+      }
     }
   }
 }
