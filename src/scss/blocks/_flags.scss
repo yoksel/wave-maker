@@ -1,12 +1,18 @@
 .flags {
+  position: relative;
+  margin-top: 10px;
+  min-height: 30px;
 
-  margin-top: 15px;
+  @media (min-width: 700px) {
+    margin-top: 0;
+  }
 
   &__text {
-    margin-top: 5px;
-    flex-basis: 100%;
-    order: 2;
+    position: absolute;
+    left: 0;
+    bottom: -1.3em;
     font-size: 14px;
+    line-height: 1;
     color: #333;
   }
 }
