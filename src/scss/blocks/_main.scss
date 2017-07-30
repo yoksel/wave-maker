@@ -4,6 +4,8 @@
 }
 
 .svg {
+  position: relative;
+  z-index: 10;
   width: 100%;
   flex-shrink: 0;
   flex-grow: 1;

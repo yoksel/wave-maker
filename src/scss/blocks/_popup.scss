@@ -22,18 +22,21 @@
   &__container {
     position: absolute;
     bottom: 45px;
-    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
     height: 0;
     min-height: 0;
     overflow: hidden;
     display: flex;
     border-radius: 5px;
     transition: all .4s;
+  }
 
-    @media (min-width: 900px) {
-      left: 50%;
-      right: auto;
-      transform: translateX(-50%);
+  &:last-child &__container {
+    @media (max-width: 1000px) {
+      left: auto;
+      right: 0;
+      transform: none;
     }
   }
 

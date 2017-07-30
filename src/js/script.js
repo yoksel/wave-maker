@@ -1015,7 +1015,6 @@ doc.addEventListener('keyup', function (event) {
   unSetIsCmd(event);
 });
 
-
 //---------------------------------------------
 
 function getMouseX(event) {
