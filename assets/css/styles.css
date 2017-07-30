@@ -491,7 +491,7 @@ H5 {
 .panel {
   position: relative;
   min-height: 60px;
-  padding: 1rem 3rem;
+  padding: 2rem 3rem;
   box-sizing: border-box;
   background: #000;
   display: flex;
@@ -741,8 +741,6 @@ H5 {
   .footer__items {
     flex-direction: column; } }
   @media (min-width: 700px) {
-  .panel {
-    padding: 2rem 3rem; }
   .panel__column--props {
     flex-wrap: nowrap; }
   .flags {
