@@ -1,7 +1,7 @@
 .panel {
   position: relative;
-  min-height: 100px;
-  padding: 2rem 3rem;
+  min-height: 60px;
+  padding: 1rem 3rem;
   box-sizing: border-box;
   background: #000;
 
@@ -13,6 +13,10 @@
   font-size: 16px;
   font-family: Arial, sans-serif;
   color: #555;
+
+  @media (min-width: 700px) {
+    padding: 2rem 3rem;
+  }
 
   &--codefont {
     font-size: 1.2rem;

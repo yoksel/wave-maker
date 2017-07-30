@@ -1,0 +1,22 @@
+.github-link {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translate(0,-50%);
+  color: teal;
+  transition: all .25s;
+
+  &:visited {
+    color: #333;
+  }
+
+  &:hover {
+    color: yellowgreen;
+  }
+}
+
+.github-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}

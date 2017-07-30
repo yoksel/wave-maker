@@ -3,13 +3,16 @@
 
 @import '_normalize';
 @import '_base';
+@import 'blocks/_github';
+@import 'blocks/_svg';
 
 @import 'blocks/_header';
-@import 'blocks/_main';
 @import 'blocks/_footer';
+
+@import 'blocks/_panel';
 @import 'blocks/_attrs';
 @import 'blocks/_code';
 @import 'blocks/_popup';
-@import 'blocks/_panel';
 @import 'blocks/_wave-types';
 @import 'blocks/_flags';
+

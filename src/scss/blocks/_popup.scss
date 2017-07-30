@@ -21,6 +21,7 @@
 
   &__container {
     position: absolute;
+    z-index: 20;
     bottom: 45px;
     left: 50%;
     transform: translateX(-50%);
