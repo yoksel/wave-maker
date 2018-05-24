@@ -14,6 +14,7 @@ var copy = require('gulp-copy');
 var ghPages = require('gulp-gh-pages');
 var colors = require('colors/safe');
 var del = require('del');
+var gulpSequence = require('gulp-sequence');
 
 // SASS, AUTOPREFIXR, MINIMIZE
 gulp.task('sass', function() {
@@ -102,6 +103,10 @@ gulp.task('copy', function() {
   return gulp.src(['assets/**/*', '*.html'])
     .pipe(copy('build/'));
 });
+
+gulp.task('build', function (cb) {
+  gulpSequence('clean', ['js', 'sass', 'include'], 'copy', cb)
+})
 
 // PUBLISH TO GITHUB PAGES
 gulp.task('ghPages', function() {
