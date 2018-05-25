@@ -734,10 +734,14 @@ Arc.prototype.addPathParams = function (params) {
 
     // Events
     input.elem.addEventListener('input', function () {
+      if (this.type === 'checkbox') {
+        return;
+      }
       setInputWidth.apply(this);
       if (!checkValue.apply(this, [error])) {
         return false;
       }
+
       that[this.name] = this.value;
       that.getPathCoords();
       that.setPathCoords();
@@ -748,6 +752,7 @@ Arc.prototype.addPathParams = function (params) {
       if (this.type !== 'text') {
         return;
       }
+
       setIsCmd(event);
       that.changeValueByKeyboard(event, this, error);
       disableInputs.call(this);
@@ -761,6 +766,7 @@ Arc.prototype.addPathParams = function (params) {
       if (this.type != 'checkbox') {
         return;
       }
+
       that[this.name] = this.checked;
 
       that.getPathCoords();
@@ -857,6 +863,29 @@ Arc.prototype.cloneParams = function () {
 
 //---------------------------------------------
 
+function getViewBoxByPath(path) {
+  const bbBox = path.elem.getBBox();
+  const strokeWidth = +path.attr('stroke-width');
+  const width =  bbBox.width;
+  const height = bbBox.height;
+
+  var viewBox = [
+    bbBox.x - strokeWidth,
+    bbBox.y - strokeWidth,
+    width + strokeWidth * 2,
+    height + strokeWidth * 2
+  ];
+
+  viewBox = viewBox.map(function (item) {
+    return Math.round(item);
+  });
+  viewBox = viewBox.join(' ');
+
+  return viewBox;
+}
+
+//---------------------------------------------
+
 Arc.prototype.getCode = function (params) {
   var params = params;
   var newParams = Object.assign({}, params);
@@ -886,21 +915,9 @@ Arc.prototype.getCode = function (params) {
   newArc.getPathCoords();
   newArc.setPathCoords();
 
-  var viewBox = [
-    0,
-    0,
-    copyRect.width + strokeWidth,
-    copyRect.height + strokeWidth
-  ];
+  var viewBox = getViewBoxByPath(this.path);
 
-  viewBox = viewBox.map(function (item) {
-    return Math.round(item);
-  });
-  viewBox = viewBox.join(' ');
-
-  var result = '<svg viewBox="' + viewBox + '">';
-  result += newPathElem.outerHTML + '</svg>'
-
+  var result = `<svg viewBox="${viewBox}">${newPathElem.outerHTML}</svg>`;
   return result;
 };
 
@@ -957,6 +974,15 @@ Arc.prototype.addWaveInputs = function () {
   }
 
   waveTypesItems.append(items);
+
+  // Fix viewBox on examples
+  items.forEach(item => {
+    const svg = $.get('svg', item.elem);
+    const path = $.get('path', item.elem);
+    const viewBox = getViewBoxByPath(path);
+
+    svg.attr('viewBox', viewBox);
+  })
 };
 
 //---------------------------------------------

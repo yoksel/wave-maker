@@ -11,6 +11,9 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.3.5",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-latest": "^6.24.1",
     "browser-sync": "^2.11.2",
     "colors": "^1.1.2",
     "css-mqpacker": "^4.0.1",
@@ -18,6 +21,7 @@
     "del": "^2.2.0",
     "editorconfig-tools": "^0.1.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
     "gulp-copy": "0.0.2",
     "gulp-gh-pages": "^0.5.4",
     "gulp-imagemin": "^2.4.0",
@@ -26,6 +30,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-ruby-sass": "^2.0.6",
     "gulp-sequence": "^1.0.0",
+    "gulp-sourcemaps": "^2.6.4",
     "imagemin-pngquant": "^4.2.2"
   },
   "scripts": {
@@ -35,5 +40,10 @@
     "deploy": "npm run build && gulp ghPages",
     "check": "editorconfig-tools check *",
     "fix": "editorconfig-tools fix *"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
   }
 }

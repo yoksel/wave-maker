@@ -15,6 +15,8 @@ var ghPages = require('gulp-gh-pages');
 var colors = require('colors/safe');
 var del = require('del');
 var gulpSequence = require('gulp-sequence');
+var babel = require("gulp-babel");
+var sourcemaps = require("gulp-sourcemaps");
 
 // SASS, AUTOPREFIXR, MINIMIZE
 gulp.task('sass', function() {
@@ -48,6 +50,9 @@ gulp.task('sass', function() {
 // JS
 gulp.task('js', function () {
   return gulp.src('src/js/**/*.js')
+  .pipe(sourcemaps.init())
+  .pipe(babel())
+  .pipe(sourcemaps.write("."))
   .pipe(gulp.dest('assets/js/'))
   .pipe(reload({ stream:true }));
 });
