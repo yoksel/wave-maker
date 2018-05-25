@@ -1,0 +1,1 @@
+{"version":3,"sources":["test.js"],"names":["test"],"mappings":";;;;;kBAAeA,OAAO,W","file":"test.js","sourcesContent":["export default test = 'hellloooo';\n"]}

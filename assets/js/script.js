@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var doc = document;
 var $ = tinyLib;
 var isCmdPressed = false;
@@ -29,89 +31,73 @@ var labelHiddenClass = labelClass + '--hidden';
 var errorClass = attrsClass + '__error';
 
 var pathCoordsList = [{
-    prop: 'startLetter'
-  },
-  {
-    prop: 'startX',
-    desc: 'start X'
-  },
-  {
-    prop: 'startY',
-    desc: 'start Y'
-  },
-  {
-    prop: 'arcLetter'
-  },
-  {
-    prop: 'rX',
-    desc: 'rx',
-    min: 0
-  },
-  {
-    prop: 'rY',
-    desc: 'ry',
-    min: 0
-  },
-  {
-    prop: 'xRot',
-    desc: 'x-axis-rotation',
-  },
-  {
-    prop: 'largeArc',
-    desc: 'large-arc-flag',
-    min: 0,
-    max: 1
-  },
-  {
-    prop: 'sweep',
-    desc: 'sweep-flag',
-    min: 0,
-    max: 1
-  },
-  {
-    prop: 'endX',
-    desc: 'end X'
-  },
-  {
-    prop: 'endY',
-    desc: 'end Y'
-  },
-];
+  prop: 'startLetter'
+}, {
+  prop: 'startX',
+  desc: 'start X'
+}, {
+  prop: 'startY',
+  desc: 'start Y'
+}, {
+  prop: 'arcLetter'
+}, {
+  prop: 'rX',
+  desc: 'rx',
+  min: 0
+}, {
+  prop: 'rY',
+  desc: 'ry',
+  min: 0
+}, {
+  prop: 'xRot',
+  desc: 'x-axis-rotation'
+}, {
+  prop: 'largeArc',
+  desc: 'large-arc-flag',
+  min: 0,
+  max: 1
+}, {
+  prop: 'sweep',
+  desc: 'sweep-flag',
+  min: 0,
+  max: 1
+}, {
+  prop: 'endX',
+  desc: 'end X'
+}, {
+  prop: 'endY',
+  desc: 'end Y'
+}];
 
 var pathParams = $.get('.path-params');
 var pathParamsList = [{
-    prop: 'repeat',
-    desc: 'repeat',
-    min: 0
-  },
-  {
-    prop: 'strokeWidth',
-    desc: 'stroke-width',
-    min: 1
-  }
-];
+  prop: 'repeat',
+  desc: 'repeat',
+  min: 0
+}, {
+  prop: 'strokeWidth',
+  desc: 'stroke-width',
+  min: 1
+}];
 
 var flags = $.get('.flags');
-var flagsList = [
-  {
-    prop: 'rotateLargeArc',
-    desc: 'larg-arc-flag',
-    type: 'checkbox',
-    disableCond: {
-      prop: 'repeat',
-      value: 0
-    }
-  },
-  {
-    prop: 'rotateSweep',
-    desc: 'sweep-flag',
-    type: 'checkbox',
-    disableCond: {
-      prop: 'repeat',
-      value: 0
-    }
+var flagsList = [{
+  prop: 'rotateLargeArc',
+  desc: 'larg-arc-flag',
+  type: 'checkbox',
+  disableCond: {
+    prop: 'repeat',
+    value: 0
   }
-];
+}, {
+  prop: 'rotateSweep',
+  desc: 'sweep-flag',
+  type: 'checkbox',
+  disableCond: {
+    prop: 'repeat',
+    value: 0
+  }
+}];
 
 var inputsToDisable = [];
 
@@ -221,12 +207,12 @@ var wavesInputsList = {
     repeat: 1,
     rotateSweep: false,
     rotateLargeArc: true
-    }
+  }
 };
 
 //---------------------------------------------
 
-var Arc = function (params) {
+var Arc = function Arc(params) {
 
   this.params = params;
   this.path = params.path || targetPath;
@@ -252,7 +238,6 @@ var Arc = function (params) {
   if (this.hasControls) {
     this.addHelpers();
     this.addControls();
-
   }
   this.getPathCoords();
   this.setPathCoords();
@@ -262,19 +247,19 @@ var Arc = function (params) {
       list: pathCoordsList,
       target: pathCoordsAttrs,
       itemIsLine: false,
-      labelIsHidden: true,
+      labelIsHidden: true
     });
     this.addPathParams({
       list: pathParamsList,
       target: pathParams,
       itemIsLine: true,
-      labelIsHidden: false,
+      labelIsHidden: false
     });
     this.addPathParams({
       list: flagsList,
       target: flags,
       itemIsLine: true,
-      labelIsHidden: false,
+      labelIsHidden: false
     });
 
     this.addWaveInputs();
@@ -320,7 +305,7 @@ Arc.prototype.setPathCoords = function () {
 
   this.addWaves();
 
-  if(this.hasControls) {
+  if (this.hasControls) {
     this.setAllHelperArcParams();
     this.setAllControlsParams();
     this.updateCode();
@@ -347,7 +332,7 @@ Arc.prototype.addControls = function () {
         'endX': getMouseX,
         'endY': getMouseY
       }
-    },
+    }
     // I dont't know how to place them on path
     // with rotation and if startY != endY
     // rx: {
@@ -366,12 +351,10 @@ Arc.prototype.addControls = function () {
 
   for (var key in this.controls) {
     var set = this.controls[key];
-    set.elemSet = $.createNS('circle')
-      .attr({
-        id: key,
-        r: 7
-      })
-      .addClass('point-control');
+    set.elemSet = $.createNS('circle').attr({
+      id: key,
+      r: 7
+    }).addClass('point-control');
 
     svg.append(set.elemSet);
 
@@ -379,7 +362,7 @@ Arc.prototype.addControls = function () {
       that.currentControl = that.controls[this.id];
       doc.onmousemove = function (event) {
         that.drag(event);
-      }
+      };
     });
   }
 };
@@ -390,7 +373,7 @@ Arc.prototype.getStartCoords = function () {
   return {
     cx: this.startX ? this.startX : 0,
     cy: this.startY ? this.startY : 0
-  }
+  };
 };
 
 //---------------------------------------------
@@ -399,16 +382,16 @@ Arc.prototype.getEndCoords = function () {
   return {
     cx: this.endX ? this.endX : 0,
     cy: this.endY ? this.endY : 0
-  }
+  };
 };
 
 //---------------------------------------------
 
 Arc.prototype.getRxCoords = function () {
   return {
-    cx: (this.arcHelpers.flipBoth.rect.x + this.arcHelpers.flipBoth.rect.width),
-    cy: (this.arcHelpers.flipBoth.rect.y + this.rY)
-  }
+    cx: this.arcHelpers.flipBoth.rect.x + this.arcHelpers.flipBoth.rect.width,
+    cy: this.arcHelpers.flipBoth.rect.y + this.rY
+  };
 };
 
 Arc.prototype.getRX = function (event) {
@@ -422,9 +405,9 @@ Arc.prototype.getRX = function (event) {
 
 Arc.prototype.getRyCoords = function () {
   return {
-    cx: (this.path.rect.x + this.path.rect.width / 2),
-    cy: (this.path.rect.y + this.path.rect.height)
-  }
+    cx: this.path.rect.x + this.path.rect.width / 2,
+    cy: this.path.rect.y + this.path.rect.height
+  };
 };
 
 Arc.prototype.getRY = function (event) {
@@ -432,7 +415,7 @@ Arc.prototype.getRY = function (event) {
   var offset = event.offsetY - (rect.y + rect.height);
   var rY = this.rY + offset;
   return rY;
-}
+};
 
 //---------------------------------------------
 
@@ -443,7 +426,7 @@ Arc.prototype.setAllControlsParams = function () {
 
     set.elemSet.attr({
       cx: coords.cx,
-      cy: coords.cy,
+      cy: coords.cy
     });
   }
 };
@@ -476,27 +459,23 @@ Arc.prototype.addHelpers = function () {
   this.arcHelpers.flipBoth = this.addHelperArc({
     id: 'arcHelper-flipSweepAndArc',
     flipSweep: true,
-    flipLargeArc: true,
+    flipLargeArc: true
     // stroke: 'seagreen'
   });
   this.arcHelpers.flipArc = this.addHelperArc({
     id: 'arcHelper-flipArc',
     flipSweep: false,
-    flipLargeArc: true,
+    flipLargeArc: true
     // stroke: 'orangered'
   });
   this.arcHelpers.flipSweep = this.addHelperArc({
     id: 'arcHelper-flipSweep',
     flipSweep: true,
-    flipLargeArc: false,
+    flipLargeArc: false
     // stroke: 'royalblue'
   });
 
-  this.arcHelpers.list = [
-    this.arcHelpers.flipBoth,
-    this.arcHelpers.flipArc,
-    this.arcHelpers.flipSweep
-  ];
+  this.arcHelpers.list = [this.arcHelpers.flipBoth, this.arcHelpers.flipArc, this.arcHelpers.flipSweep];
 };
 
 //---------------------------------------------
@@ -504,12 +483,11 @@ Arc.prototype.addHelpers = function () {
 Arc.prototype.addHelperArc = function (params) {
   var arcHelper = {};
   arcHelper.params = params;
-  arcHelper.elemSet = $.createNS('path')
-    .attr({
-      'id': params.id,
-      'fill': 'none',
-      'stroke': params.stroke || '#999'
-    });
+  arcHelper.elemSet = $.createNS('path').attr({
+    'id': params.id,
+    'fill': 'none',
+    'stroke': params.stroke || '#999'
+  });
 
   svg.prepend(arcHelper.elemSet);
   return arcHelper;
@@ -614,18 +592,12 @@ Arc.prototype.createInput = function (item) {
   var name = item.prop;
   var value = this[name];
 
-  var input = $.create('input')
-    .attr({
-      type: item.type || 'text',
-      name: name,
-      id: name,
-      value: value
-    })
-    .addClass([
-      inputClass,
-      inputClass + '--' + name,
-      inputClass + '--' + typeof (value)
-    ]);
+  var input = $.create('input').attr({
+    type: item.type || 'text',
+    name: name,
+    id: name,
+    value: value
+  }).addClass([inputClass, inputClass + '--' + name, inputClass + '--' + (typeof value === 'undefined' ? 'undefined' : _typeof(value))]);
 
   if (item.min !== undefined && item.min !== null) {
     input.attr({
@@ -637,17 +609,15 @@ Arc.prototype.createInput = function (item) {
       max: item.max
     });
   }
-  if (typeof (value) === 'string') {
+  if (typeof value === 'string') {
     input.attr({
       'disabled': ''
     });
-  }
-  else if (typeof (value) === 'boolean' && value === true) {
+  } else if (typeof value === 'boolean' && value === true) {
     input.attr({
       checked: value
     });
   }
-
 
   if (item.disableCond) {
     var cond = item.disableCond;
@@ -659,7 +629,7 @@ Arc.prototype.createInput = function (item) {
     inputsToDisable.push({
       input: input,
       disableCond: item.disableCond
-    })
+    });
   }
 
   return input;
@@ -671,11 +641,9 @@ Arc.prototype.createLabel = function (item, params) {
   var name = item.prop;
   var value = this[name];
 
-  var label = $.create('label')
-    .attr({
-      for: name
-    })
-    .addClass(labelClass);
+  var label = $.create('label').attr({
+    for: name
+  }).addClass(labelClass);
 
   if (params.labelIsHidden) {
     label.addClass(labelHiddenClass);
@@ -694,8 +662,7 @@ Arc.prototype.createError = function (item) {
   if (item.min === undefined && item.max === undefined) {
     return null;
   }
-  var error = $.create('span')
-    .addClass(errorClass);
+  var error = $.create('span').addClass(errorClass);
 
   return error;
 };
@@ -718,12 +685,7 @@ Arc.prototype.addPathParams = function (params) {
 
     var error = that.createError(item);
 
-    var item = $.create('span')
-      .addClass([
-        itemClass,
-        itemClass + '--' + name
-      ])
-      .append([input, label, error]);
+    var item = $.create('span').addClass([itemClass, itemClass + '--' + name]).append([input, label, error]);
 
     if (params.itemIsLine) {
       item.addClass(itemLineClass);
@@ -734,10 +696,14 @@ Arc.prototype.addPathParams = function (params) {
 
     // Events
     input.elem.addEventListener('input', function () {
+      if (this.type === 'checkbox') {
+        return;
+      }
       setInputWidth.apply(this);
       if (!checkValue.apply(this, [error])) {
         return false;
       }
+
       that[this.name] = this.value;
       that.getPathCoords();
       that.setPathCoords();
@@ -748,6 +714,7 @@ Arc.prototype.addPathParams = function (params) {
       if (this.type !== 'text') {
         return;
       }
+
       setIsCmd(event);
       that.changeValueByKeyboard(event, this, error);
       disableInputs.call(this);
@@ -761,12 +728,12 @@ Arc.prototype.addPathParams = function (params) {
       if (this.type != 'checkbox') {
         return;
       }
+
       that[this.name] = this.checked;
 
       that.getPathCoords();
       that.setPathCoords();
     });
-
   });
 
   target.append(items);
@@ -775,7 +742,7 @@ Arc.prototype.addPathParams = function (params) {
 //---------------------------------------------
 
 // context: input
-function disableInputs () {
+function disableInputs() {
   var inputId = this.id;
   var inputValue = +this.value;
 
@@ -786,8 +753,7 @@ function disableInputs () {
     if (inputId === cond.prop) {
       if (inputValue === cond.value) {
         input.elem.disabled = true;
-      }
-      else {
+      } else {
         input.elem.disabled = false;
       }
     }
@@ -826,7 +792,7 @@ Arc.prototype.addWave = function (counter) {
   delete arcParamsSet['startX'];
   delete arcParamsSet['startY'];
 
-  arcParamsSet['endX'] = this.pathCoordsSet.endX + (waveWidth * (counter + 1));
+  arcParamsSet['endX'] = this.pathCoordsSet.endX + waveWidth * (counter + 1);
   if (counter % 2 === 0) {
     if (this.rotateSweep) {
       arcParamsSet['sweep'] = +!this.pathCoordsSet.sweep;
@@ -857,10 +823,28 @@ Arc.prototype.cloneParams = function () {
 
 //---------------------------------------------
 
+function getViewBoxByPath(path) {
+  var bbBox = path.elem.getBBox();
+  var strokeWidth = +path.attr('stroke-width');
+  var width = bbBox.width;
+  var height = bbBox.height;
+
+  var viewBox = [bbBox.x - strokeWidth, bbBox.y - strokeWidth, width + strokeWidth * 2, height + strokeWidth * 2];
+
+  viewBox = viewBox.map(function (item) {
+    return Math.round(item);
+  });
+  viewBox = viewBox.join(' ');
+
+  return viewBox;
+}
+
+//---------------------------------------------
+
 Arc.prototype.getCode = function (params) {
   var params = params;
   var newParams = Object.assign({}, params);
-  newParams.path = this.path.clone()
+  newParams.path = this.path.clone();
 
   if (newParams.strokeWidthBtn) {
     newParams.strokeWidth = newParams.strokeWidthBtn;
@@ -886,21 +870,9 @@ Arc.prototype.getCode = function (params) {
   newArc.getPathCoords();
   newArc.setPathCoords();
 
-  var viewBox = [
-    0,
-    0,
-    copyRect.width + strokeWidth,
-    copyRect.height + strokeWidth
-  ];
+  var viewBox = getViewBoxByPath(this.path);
 
-  viewBox = viewBox.map(function (item) {
-    return Math.round(item);
-  });
-  viewBox = viewBox.join(' ');
-
-  var result = '<svg viewBox="' + viewBox + '">';
-  result += newPathElem.outerHTML + '</svg>'
-
+  var result = '<svg viewBox="' + viewBox + '">' + newPathElem.outerHTML + '</svg>';
   return result;
 };
 
@@ -928,18 +900,13 @@ Arc.prototype.addWaveInputs = function () {
     }
     var demoPath = this.getCode(params);
 
-    var button = $.create('button')
-      .attr({
-        type: 'button',
-        name: prefix,
-        id: key
-      })
-      .html(demoPath)
-      .addClass(prefix + '__button');
+    var button = $.create('button').attr({
+      type: 'button',
+      name: prefix,
+      id: key
+    }).html(demoPath).addClass(prefix + '__button');
 
-    var item = $.create('div')
-      .addClass(prefix + '__item')
-      .append([button]);
+    var item = $.create('div').addClass(prefix + '__item').append([button]);
 
     items.push(item);
 
@@ -957,6 +924,15 @@ Arc.prototype.addWaveInputs = function () {
   }
 
   waveTypesItems.append(items);
+
+  // Fix viewBox on examples
+  items.forEach(function (item) {
+    var svg = $.get('svg', item.elem);
+    var path = $.get('path', item.elem);
+    var viewBox = getViewBoxByPath(path);
+
+    svg.attr('viewBox', viewBox);
+  });
 };
 
 //---------------------------------------------
@@ -1000,14 +976,14 @@ function checkValue(errorElem) {
 
 function setIsCmd(event) {
   // Chrome || FF
-  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
+  if (event.keyCode == 91 || event.key === 'Meta' && event.keyCode === 224) {
     isCmdPressed = true;
   }
 }
 
 function unSetIsCmd(event) {
   // Chrome || FF
-  if (event.keyCode == 91 || (event.key === 'Meta' && event.keyCode === 224)) {
+  if (event.keyCode == 91 || event.key === 'Meta' && event.keyCode === 224) {
     isCmdPressed = false;
   }
 }
@@ -1041,16 +1017,14 @@ popupToggle.forEach(function (item) {
 
     if (parent.classList.contains(popupOpenedClass)) {
       parent.classList.remove(popupOpenedClass);
-    }
-    else {
+    } else {
       closeOpened();
       changeContentHeight.call(this);
 
       parent.classList.toggle(popupOpenedClass);
     }
   });
- });
-
+});
 
 doc.addEventListener('click', function () {
   closeOpened();
@@ -1062,7 +1036,6 @@ function closeOpened() {
   if (popupPanel.elem) {
     popupPanel.removeClass(popupOpenedClass);
   }
-
 }
 
 function changeContentHeight() {
@@ -1072,7 +1045,7 @@ function changeContentHeight() {
 
   // trick to get real scrollHeight
   content.style.maxHeight = '0';
-  container.style.maxHeight = (content.scrollHeight + 10) + 'px';
+  container.style.maxHeight = content.scrollHeight + 10 + 'px';
   content.style.maxHeight = null;
 }
 
@@ -1082,3 +1055,4 @@ var arc = new Arc({
   path: targetPath,
   hasControls: true
 });
+//# sourceMappingURL=script.js.map

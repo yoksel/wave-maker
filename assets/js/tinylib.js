@@ -1,3 +1,7 @@
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 // Tiny library
 
 //---------------------------------
@@ -150,7 +154,7 @@
 
       if (attrVal) {
         attrSet[attrName] = attrVal;
-      } else if (typeof attrName === 'object') {
+      } else if ((typeof attrName === 'undefined' ? 'undefined' : _typeof(attrName)) === 'object') {
         attrSet = attrName;
       }
 
@@ -163,7 +167,6 @@
 
       var out = elem.getAttribute(attrName);
       return out;
-
     };
 
     //---------------------------------
@@ -210,20 +213,19 @@
           return dataList;
         }
         // Input: object
-        else if (typeof content === 'object') {
+        else if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) === 'object') {
 
-          for (var key in content) {
-            elem.dataset[key] = content[key];
+            for (var key in content) {
+              elem.dataset[key] = content[key];
+            }
+
+            return elem.dataset;
           }
-
-          return elem.dataset;
-        }
-        // Input: string
-        else if (typeof content === 'string') {
-          var data = elem.dataset[content];
-          return data;
-        }
-
+          // Input: string
+          else if (typeof content === 'string') {
+              var data = elem.dataset[content];
+              return data;
+            }
       }
 
       return null;
@@ -279,5 +281,5 @@
   if (typeof tinyLib === 'undefined') {
     window.tinyLib = define_library();
   }
-
 })(window);
+//# sourceMappingURL=tinylib.js.map
